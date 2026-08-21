@@ -53,6 +53,7 @@ class StoryboardConfig:
     # Frame template (includes size information in path)
     frame_template: str = "1080x1920/default.html"  # Template path with size (e.g., "1080x1920/default.html")
     template_params: Optional[Dict[str, Any]] = None  # Custom template parameters (e.g., {"accent_color": "#ff0000"})
+    subtitle_settings: Optional[Dict[str, Any]] = None
 
 
 @dataclass
@@ -61,6 +62,7 @@ class StoryboardFrame:
     index: int                                 # Frame index (0-based)
     narration: str                             # Narration text
     image_prompt: str                          # Image generation prompt (can be None for text-only or video)
+    secondary_subtitle: Optional[str] = None
     
     # Generated resource paths
     audio_path: Optional[str] = None           # Audio file path (narration)

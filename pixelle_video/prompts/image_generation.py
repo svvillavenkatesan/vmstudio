@@ -64,6 +64,7 @@ Based on the existing video script, create corresponding **English** image promp
 - Language: **Must use English** (for AI image generation models)
 - Description structure: scene + character action + emotion + symbolic elements
 - Description length: Ensure clear, complete, and creative descriptions (recommended 50-100 English words)
+- Never request readable text, Tamil letters, signs, captions, logos, or watermarks inside the image. Tamil text is rendered later by the video composition layer.
 
 ## Visual Creative Requirements
 - Each image must accurately reflect the specific content and emotion of the corresponding narration
@@ -83,6 +84,11 @@ Based on the existing video script, create corresponding **English** image promp
 - Avoid visual elements unrelated to or contradicting the copy content
 - Choose visual presentation methods that best enhance the persuasiveness of the copy
 - Ensure the audience can quickly understand the core viewpoint of the copy through images
+
+## Tamil Cultural Context
+- When the narration explicitly refers to Tamil culture, a Tamil festival, Tamil history, Tamil literature, or Tamil Nadu, use accurate and respectful visual details.
+- For Pongal, include context such as a kolam, clay pot, sugarcane, turmeric plants, traditional dress, and a rural Tamil Nadu atmosphere when appropriate.
+- Do not add cultural symbols to unrelated Tamil-language topics (for example technology or business news).
 
 ## Creative Guidance
 1. **Phenomenon Description Copy**: Use intuitive scenes to represent social phenomena
@@ -112,6 +118,7 @@ Strictly output in the following JSON format, **image prompts must be in English
 6. Image prompts must accurately reflect the specific content and emotion of the corresponding narration
 7. Each image must be creative and visually impactful, avoid being monotonous
 8. Ensure visual scenes can enhance the persuasiveness of the copy and audience understanding
+9. Never generate readable text or typography in the image
 
 Now, please create {narrations_count} corresponding **English** image prompts for the above {narrations_count} narrations. Only output JSON, no other content.
 """

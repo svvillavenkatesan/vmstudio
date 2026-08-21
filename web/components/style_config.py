@@ -33,6 +33,8 @@ from web.pipelines.api_workflows import (
     workflow_source_label,
 )
 from pixelle_video.config import config_manager
+from pixelle_video.utils.template_util import get_template_display_name
+from web.components.subtitle_config import render_subtitle_config
 
 
 def is_api_workflow(workflow_key: str | None) -> bool:
@@ -78,7 +80,11 @@ def render_style_config(pixelle_video):
         # ================================================================
         if tts_mode == "local":
             # Import voice configuration
-            from pixelle_video.tts_voices import EDGE_TTS_VOICES, get_voice_display_name
+            from pixelle_video.tts_voices import (
+                EDGE_TTS_VOICES,
+                TAMIL_VOICE_PROFILES,
+                get_voice_display_name,
+            )
             
             # Get saved voice from config
             local_config = tts_config.get("local", {})
@@ -100,6 +106,26 @@ def render_style_config(pixelle_video):
                 if voice_id == saved_voice:
                     default_voice_index = idx
             
+            profile_options = [profile["id"] for profile in TAMIL_VOICE_PROFILES]
+            profile_labels = {
+                profile["id"]: tr(profile["label_key"])
+                for profile in TAMIL_VOICE_PROFILES
+            }
+            profile_speeds = {
+                profile["id"]: profile["speed"]
+                for profile in TAMIL_VOICE_PROFILES
+            }
+            selected_profile = st.selectbox(
+                tr("tts.profile_selector"),
+                profile_options,
+                format_func=lambda profile_id: profile_labels[profile_id],
+                key="tts_tamil_voice_profile",
+            )
+            if st.session_state.get("tts_tamil_voice_profile_last") != selected_profile:
+                st.session_state["tts_local_speed"] = profile_speeds[selected_profile]
+                st.session_state["tts_tamil_voice_profile_last"] = selected_profile
+            st.caption(tr("tts.profile_hint"))
+
             # Two-column layout: Voice | Speed
             voice_col, speed_col = st.columns([1, 1])
             
@@ -122,7 +148,7 @@ def render_style_config(pixelle_video):
                     tr("tts.speed"),
                     min_value=0.5,
                     max_value=2.0,
-                    value=saved_speed,
+                    value=st.session_state.get("tts_local_speed", saved_speed),
                     step=0.1,
                     format="%.1fx",
                     key="tts_local_speed"
@@ -353,8 +379,8 @@ def render_style_config(pixelle_video):
         
         # Determine type-specific default template
         type_default_templates = {
-            'static': '1080x1920/static_default.html',
-            'image': '1080x1920/image_default.html',
+            'static': '1080x1920/static_tamil_poetry.html',
+            'image': '1080x1920/image_tamil_culture.html',
             'video': '1080x1920/video_default.html',
         }
         type_specific_default = type_default_templates.get(selected_template_type, config_default_template)
@@ -466,7 +492,7 @@ def render_style_config(pixelle_video):
                                                 -webkit-line-clamp: 5;
                                                 -webkit-box-orient: vertical;
                                                 word-break: break-all;
-                                            ">{template.display_info.name}</div>
+                                            ">{get_template_display_name(template.display_info.name, get_language())}</div>
                                         </div>
                                         """,
                                         unsafe_allow_html=True
@@ -496,7 +522,7 @@ def render_style_config(pixelle_video):
             for size, templates in grouped_templates.items():
                 for template in templates:
                     if template.template_path == frame_template:
-                        selected_template_name = template.display_info.name
+                        selected_template_name = get_template_display_name(template.display_info.name, get_language())
                         break
                 if selected_template_name:
                     break
@@ -932,6 +958,8 @@ def render_style_config(pixelle_video):
             workflow_key = None
             prompt_prefix = ""
     
+    subtitle_settings = render_subtitle_config()
+
     # Return all style configuration parameters
     final_media_workflow = workflow_key
 
@@ -947,5 +975,6 @@ def render_style_config(pixelle_video):
         "api_video_params": api_video_params if template_media_type == "video" else None,
         "prompt_prefix": prompt_prefix if prompt_prefix else "",
         "media_width": media_width,
-        "media_height": media_height
+        "media_height": media_height,
+        "subtitle_settings": subtitle_settings,
     }

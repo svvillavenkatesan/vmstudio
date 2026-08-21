@@ -30,6 +30,21 @@ from pixelle_video.utils.os_util import (
 logger = logging.getLogger(__name__)
 
 
+TAMIL_TEMPLATE_DISPLAY_NAMES = {
+    "image_tamil_culture.html": "🪔 தமிழ் பண்பாடு",
+    "image_tamil_story.html": "🎬 தமிழ் கதை",
+    "static_tamil_poetry.html": "📝 தமிழ் கவிதை",
+    "image_tamil_education.html": "📚 தமிழ் கல்வி",
+}
+
+
+def get_template_display_name(template_name: str, language: str | None = None) -> str:
+    """Return a Tamil-friendly name for VILLVA templates when selected."""
+    if language == "ta_IN" and template_name in TAMIL_TEMPLATE_DISPLAY_NAMES:
+        return TAMIL_TEMPLATE_DISPLAY_NAMES[template_name]
+    return template_name
+
+
 def parse_template_size(template_path: str) -> Tuple[int, int]:
     """
     Parse video size from template path

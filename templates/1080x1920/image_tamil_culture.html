@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="template:media-width" content="1024">
+    <meta name="template:media-height" content="1024">
+    <style>
+        * { box-sizing: border-box; }
+        html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
+        body {
+            color: #2b1711;
+            background: #f7eddb;
+            font-family: "Nirmala UI", "Latha", "Noto Sans Tamil", sans-serif;
+        }
+        .page { height: 100%; padding: 70px 66px 55px; display: flex; flex-direction: column; gap: 34px;
+            background: radial-gradient(circle at 8% 8%, #f6c66f 0, transparent 21%),
+                        radial-gradient(circle at 96% 76%, #d9844c 0, transparent 25%), #f7eddb; }
+        .masthead { border-top: 8px solid #9d4d28; border-bottom: 2px solid #c98242; padding: 23px 0 16px; }
+        .brand { color: #9d4d28; font-size: 24px; font-weight: 700; letter-spacing: 4px; }
+        .title { font-size: 70px; font-weight: 800; line-height: 1.26; margin-top: 13px; overflow-wrap: anywhere; }
+        .media { height: 870px; border: 15px solid #fff9ed; box-shadow: 0 18px 42px #572b1933; background: #dca66e; position: relative; }
+        .media::before, .media::after { content: "✦"; position: absolute; z-index: 2; color: #fff0bc; font-size: 42px; text-shadow: 0 2px 8px #40201088; }
+        .media::before { top: 17px; left: 22px; } .media::after { right: 22px; bottom: 14px; }
+        .media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .narration { flex: 1; display: flex; align-items: center; justify-content: center; padding: 34px 44px;
+            color: #462316; background: #fff9ed; border-left: 8px solid #ba6835; border-right: 8px solid #ba6835;
+            font-size: 45px; line-height: 1.7; font-weight: 600; text-align: center; overflow-wrap: anywhere; }
+        .footer { display: flex; justify-content: space-between; align-items: center; color: #7c3d25; font-size: 22px; font-weight: 700; }
+        .kolam { letter-spacing: 11px; font-size: 28px; }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="masthead">
+            <div class="brand">VILLVA MEDIA STUDIO</div>
+            <div class="title">{{title}}</div>
+        </header>
+        <section class="media"><img src="{{image}}" alt="காட்சி"></section>
+        <section class="narration">{{text}}</section>
+        <footer class="footer"><span class="kolam">✦ ◇ ✦</span><span>தமிழில் கதைகள்</span></footer>
+    </main>
+</body>
+</html>

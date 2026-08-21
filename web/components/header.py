@@ -34,7 +34,7 @@ def render_language_selector():
     languages = get_available_languages()
     lang_options = [f"{code} - {name}" for code, name in languages.items()]
     
-    current_lang = st.session_state.get("language", "zh_CN")
+    current_lang = st.session_state.get("language", "ta_IN")
     current_index = list(languages.keys()).index(current_lang) if current_lang in languages else 0
     
     selected = st.selectbox(

@@ -348,6 +348,7 @@ class PersistenceService:
             "media_workflow": config.media_workflow,
             "frame_template": config.frame_template,
             "template_params": config.template_params,
+            "subtitle_settings": config.subtitle_settings,
         }
     
     def _dict_to_config(self, data: Dict[str, Any]) -> StoryboardConfig:
@@ -370,6 +371,7 @@ class PersistenceService:
             media_workflow=data.get("media_workflow", data.get("image_workflow")),  # Backward compatibility
             frame_template=data.get("frame_template", "1080x1920/default.html"),
             template_params=data.get("template_params"),
+            subtitle_settings=data.get("subtitle_settings"),
         )
     
     def _frame_to_dict(self, frame: StoryboardFrame) -> Dict[str, Any]:
@@ -378,6 +380,7 @@ class PersistenceService:
             "index": frame.index,
             "narration": frame.narration,
             "image_prompt": frame.image_prompt,
+            "secondary_subtitle": frame.secondary_subtitle,
             "audio_path": frame.audio_path,
             "media_type": frame.media_type,
             "image_path": frame.image_path,
@@ -394,6 +397,7 @@ class PersistenceService:
             index=data["index"],
             narration=data["narration"],
             image_prompt=data["image_prompt"],
+            secondary_subtitle=data.get("secondary_subtitle"),
             audio_path=data.get("audio_path"),
             media_type=data.get("media_type"),
             image_path=data.get("image_path"),

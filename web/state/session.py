@@ -24,8 +24,9 @@ from web.utils.async_helpers import run_async
 def init_session_state():
     """Initialize session state variables"""
     if "language" not in st.session_state:
-        # Use auto-detected system language
-        st.session_state.language = get_language()
+        # VILLVA MEDIA STUDIO is Tamil-first. Users can still select another
+        # installed locale from the header.
+        st.session_state.language = "ta_IN"
 
 
 def init_i18n():
@@ -33,7 +34,7 @@ def init_i18n():
     # Locales are already loaded and system language detected on import
     # Get language from session state or use auto-detected system language
     if "language" not in st.session_state:
-        st.session_state.language = get_language()  # Use auto-detected language
+        st.session_state.language = "ta_IN"
     
     # Set current language
     set_language(st.session_state.language)

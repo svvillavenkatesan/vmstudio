@@ -19,8 +19,35 @@ Defines available voices for local Edge TTS inference.
 from typing import List, Dict, Any
 
 
+# These profiles are intentionally conservative: Edge TTS exposes reliable
+# Tamil voice identities and rate, but not a true emotional style control.
+# The UI labels this clearly; ComfyUI/external TTS remains the option for
+# expressive synthesis or voice cloning.
+TAMIL_VOICE_PROFILES: List[Dict[str, Any]] = [
+    {"id": "natural", "label_key": "tts.profile.natural", "speed": 1.0},
+    {"id": "news", "label_key": "tts.profile.news", "speed": 0.92},
+    {"id": "story", "label_key": "tts.profile.story", "speed": 0.88},
+    {"id": "poetry", "label_key": "tts.profile.poetry", "speed": 0.82},
+]
+
+
 # Edge TTS voice presets for local inference
 EDGE_TTS_VOICES: List[Dict[str, Any]] = [
+    # Tamil voices — the two built-in Edge voices are the safe local defaults.
+    # Additional expressive Tamil profiles require a configured external or
+    # ComfyUI TTS provider, rather than pretending that Edge can change style.
+    {
+        "id": "ta-IN-PallaviNeural",
+        "label_key": "tts.voice.ta_IN_PallaviNeural",
+        "locale": "ta-IN",
+        "gender": "female"
+    },
+    {
+        "id": "ta-IN-ValluvarNeural",
+        "label_key": "tts.voice.ta_IN_ValluvarNeural",
+        "locale": "ta-IN",
+        "gender": "male"
+    },
     # Chinese voices
     {
         "id": "zh-CN-XiaoxiaoNeural",
@@ -213,8 +240,8 @@ def get_voice_display_name(voice_id: str, tr_func=None, locale: str = "zh_CN") -
     if not voice_config:
         return voice_id
     
-    # If Chinese locale and translation function available, use translated label
-    if locale == "zh_CN" and tr_func:
+    # Localized display names are useful for Tamil-first and Chinese UI.
+    if locale in {"zh_CN", "ta_IN"} and tr_func:
         label_key = voice_config["label_key"]
         return tr_func(label_key)
     

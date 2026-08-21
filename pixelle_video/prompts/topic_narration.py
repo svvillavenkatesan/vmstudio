@@ -19,19 +19,24 @@ For generating narrations from a topic/theme.
 
 TOPIC_NARRATION_PROMPT = """# Role Definition
 You are a professional content creation expert, skilled at expanding topics into engaging short video scripts, explaining viewpoints in an accessible way to help audiences understand complex concepts.
-Globally, you must strictly output copy in the corresponding language type according to the user's language type.
+Globally, you must strictly write in the explicitly selected output language.
 
 # Core Task
 The user will input a topic or theme. You need to create {n_storyboard} video storyboards for this topic or theme. Each storyboard contains "narration (for TTS to generate video explanation audio)", naturally and valuably, like chatting with a friend, to resonate with the audience.
-- Language consistency requirement: Strictly output copy according to the user's input language type - if input is English, output must be English, and so on
+- Language requirement: Strictly use the user's selected output language, regardless of the input topic language.
+- Tamil-first requirement: When the input is Tamil, write fluent contemporary Tamil suitable for spoken narration. Use natural Tamil punctuation and phrasing; do not translate English sentence patterns word-for-word.
+- Cultural accuracy: When the topic concerns Tamil culture, history, literature, festivals, or places, use respectful, specific context and never invent historical facts or quotations.
 
 # Input Topic
 {topic}
 
 # Output Requirements
 
+## Selected Output Language
+Write every narration in **{output_language}**. This explicit user selection overrides the input topic language.
+
 ## Narration Specifications
-- Output language requirement: Strictly output according to the language of the user's input topic or theme. For example: if the user's input is in English, the output copy must be in English, same for Chinese.
+- Output language requirement: Strictly use {output_language} for every narration.
 - Purpose: For TTS to generate short video audio, explaining topics in an accessible way
 - Word count limit: Strictly control to {min_words}~{max_words} words (minimum not less than {min_words} words)
 - Ending format: Do not use punctuation at the end of each narration. If there are sentence breaks in the narration, Chinese punctuation (,。?!……:"") must be used to express tone and pauses. Automatically determine and insert appropriate punctuation to maintain natural spoken rhythm (e.g., "Right? Wrong." should have pauses and tonal shifts)
@@ -64,11 +69,10 @@ Based on the topic content, various expression methods such as statements, scene
 - Organizing storyboards according to some hidden template order
 
 [Special Emphasis]
-## Language Consistency Requirements (Strictly Enforce)
-- Narration language must match the user's input video intent
-- If video intent is in Chinese, narration must be in Chinese
-- If video intent is in English, narration must be in English
-- Unless the video intent explicitly specifies an output language, strictly follow the original language of the intent
+## Output Language Requirements (Strictly Enforce)
+- Every narration must be written in {output_language}
+- The selected output language overrides the language used to enter the topic
+- Names and necessary technical terms may remain in their established form
 - The opening of the first storyboard should be completely naturally chosen based on the topic content, without any fixed vocabulary tendency
 - In the entire set of narrations, if any word (such as "sometimes", "actually", "have you ever") appears more than once as an opening, it is a failed creation
 - Should be as natural and fluent as a real person speaking, not applying any sentence pattern template
@@ -123,7 +127,8 @@ Strictly output in the following JSON format, do not add any additional text exp
 8. The same word (such as "sometimes", "have you ever", "actually", "imagine") can appear as an opening at most once in all narrations
 9. Do not form any hidden sentence pattern rules. The opening of each storyboard should truly be independently thought out and naturally expressed
 10. Check your output: if any word appears as an opening 2 or more times, it must be modified
-11. Output language requirement: Strictly output according to the language of the user's input topic or theme. For example: if the user's input is in English, the output copy must be in English, same for Chinese.
+11. Output language requirement: Strictly use {output_language}, even when the topic was entered in another language.
+12. When the selected output language is Tamil, keep the script in natural Tamil unless a name or technical term genuinely requires another language.
 
 Now, please create narrations for {n_storyboard} storyboards for the topic.
 ⚠️ Special note: After writing, self-check the openings of all storyboards to ensure no repeated use of the same word or phrase as an opening.
@@ -135,7 +140,8 @@ def build_topic_narration_prompt(
     topic: str,
     n_storyboard: int,
     min_words: int,
-    max_words: int
+    max_words: int,
+    output_language: str = "the same language as the input",
 ) -> str:
     """
     Build topic narration prompt
@@ -153,6 +159,7 @@ def build_topic_narration_prompt(
         topic=topic,
         n_storyboard=n_storyboard,
         min_words=min_words,
-        max_words=max_words
+        max_words=max_words,
+        output_language=output_language,
     )
 

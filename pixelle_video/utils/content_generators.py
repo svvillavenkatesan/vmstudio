@@ -28,7 +28,8 @@ async def generate_title(
     llm_service,
     content: str,
     strategy: Literal["auto", "direct", "llm"] = "auto",
-    max_length: int = 15
+    max_length: int = 15,
+    output_language: str = "the same language as the input",
 ) -> str:
     """
     Generate title from content
@@ -50,7 +51,7 @@ async def generate_title(
         return content[:max_length] if len(content) > max_length else content
     
     if strategy == "auto":
-        if len(content.strip()) <= 15:
+        if output_language == "the same language as the input" and len(content.strip()) <= 15:
             return content.strip()
         # Fall through to LLM
     
@@ -58,7 +59,9 @@ async def generate_title(
     from pixelle_video.prompts import build_title_generation_prompt
     
     # Pass max_length to prompt so LLM knows the character limit
-    prompt = build_title_generation_prompt(content, max_length=max_length)
+    prompt = build_title_generation_prompt(
+        content, max_length=max_length, output_language=output_language
+    )
     response = await llm_service(prompt, temperature=0.7, max_tokens=2000)
     
     # Clean up response
@@ -97,7 +100,8 @@ async def generate_narrations_from_topic(
     topic: str,
     n_scenes: int = 5,
     min_words: int = 5,
-    max_words: int = 20
+    max_words: int = 20,
+    output_language: str = "the same language as the input",
 ) -> List[str]:
     """
     Generate narrations from topic using LLM
@@ -120,7 +124,8 @@ async def generate_narrations_from_topic(
         topic=topic,
         n_storyboard=n_scenes,
         min_words=min_words,
-        max_words=max_words
+        max_words=max_words,
+        output_language=output_language,
     )
     
     response = await llm_service(
@@ -155,7 +160,8 @@ async def generate_narrations_from_content(
     content: str,
     n_scenes: int = 5,
     min_words: int = 5,
-    max_words: int = 20
+    max_words: int = 20,
+    output_language: str = "the same language as the input",
 ) -> List[str]:
     """
     Generate narrations from user-provided content using LLM
@@ -178,7 +184,8 @@ async def generate_narrations_from_content(
         content=content,
         n_storyboard=n_scenes,
         min_words=min_words,
-        max_words=max_words
+        max_words=max_words,
+        output_language=output_language,
     )
     
     response = await llm_service(
@@ -264,6 +271,28 @@ async def split_narration_script(
         logger.info(f"   Min: {min(lengths)} chars, Max: {max(lengths)} chars, Avg: {sum(lengths)//len(lengths)} chars")
     
     return narrations
+
+
+async def generate_subtitle_translations(
+    llm_service,
+    narrations: List[str],
+    target_language: str,
+) -> List[str]:
+    """Translate ordered narration segments for bilingual captions."""
+    if not narrations:
+        return []
+    prompt = (
+        f"Translate every item into natural {target_language} for concise video subtitles. "
+        "Preserve names, meaning, order, and item count. Return only valid JSON in the form "
+        '{"translations": ["..."]}.\n\n'
+        + json.dumps(narrations, ensure_ascii=False)
+    )
+    response = await llm_service(prompt=prompt, temperature=0.2, max_tokens=2000)
+    result = _parse_json(response)
+    translations = result.get("translations")
+    if not isinstance(translations, list) or len(translations) != len(narrations):
+        raise ValueError("Invalid bilingual subtitle translation response")
+    return [str(item).strip() for item in translations]
 
 
 async def generate_image_prompts(

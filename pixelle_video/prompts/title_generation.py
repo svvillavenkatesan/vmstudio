@@ -23,10 +23,7 @@ Content:
 {content}
 
 Requirements:
-1. **Language Consistency (CRITICAL)**: The title MUST be in the same language as the input content
-   - If the input content is in English, the title MUST be in English
-   - If the input content is in Chinese, the title MUST be in Chinese
-   - Strictly follow the language of the input content
+1. **Language (CRITICAL)**: The title MUST be in **{output_language}**. This is the user's selected output language.
 
 2. **Character Limit (CRITICAL)**: The title MUST NOT exceed {max_length} characters
    - Count every character including spaces
@@ -64,7 +61,11 @@ Requirements:
 Title:"""
 
 
-def build_title_generation_prompt(content: str, max_length: int = 15) -> str:
+def build_title_generation_prompt(
+    content: str,
+    max_length: int = 15,
+    output_language: str = "the same language as the input",
+) -> str:
     """
     Build title generation prompt
     
@@ -80,6 +81,7 @@ def build_title_generation_prompt(content: str, max_length: int = 15) -> str:
     
     return TITLE_GENERATION_PROMPT.format(
         content=content_preview,
-        max_length=max_length
+        max_length=max_length,
+        output_language=output_language,
     )
 

@@ -40,6 +40,7 @@ from pixelle_video.utils.content_generators import (
     generate_narrations_from_topic,
     split_narration_script,
     generate_image_prompts,
+    generate_subtitle_translations,
 )
 from pixelle_video.utils.os_util import (
     create_task_output_dir,
@@ -110,6 +111,7 @@ class StandardPipeline(LinearVideoPipeline):
         n_scenes = ctx.params.get("n_scenes", 5)
         min_words = ctx.params.get("min_narration_words", 5)
         max_words = ctx.params.get("max_narration_words", 20)
+        output_language = "Tamil" if ctx.params.get("output_language", "ta") == "ta" else "English"
         
         if mode == "generate":
             self._report_progress(ctx.progress_callback, "generating_narrations", 0.05)
@@ -118,7 +120,8 @@ class StandardPipeline(LinearVideoPipeline):
                 topic=text,
                 n_scenes=n_scenes,
                 min_words=min_words,
-                max_words=max_words
+                max_words=max_words,
+                output_language=output_language,
             )
             logger.info(f"✅ Generated {len(ctx.narrations)} narrations")
         else:  # fixed
@@ -138,6 +141,7 @@ class StandardPipeline(LinearVideoPipeline):
         title = ctx.params.get("title")
         mode = ctx.params.get("mode", "generate")
         text = ctx.input_text
+        output_language = "Tamil" if ctx.params.get("output_language", "ta") == "ta" else "English"
         
         if title:
             ctx.title = title
@@ -145,10 +149,14 @@ class StandardPipeline(LinearVideoPipeline):
         else:
             self._report_progress(ctx.progress_callback, "generating_title", 0.01)
             if mode == "generate":
-                ctx.title = await generate_title(self.llm, text, strategy="auto")
+                ctx.title = await generate_title(
+                    self.llm, text, strategy="auto", output_language=output_language
+                )
                 logger.info(f"   Title: '{ctx.title}' (auto-generated)")
             else:  # fixed
-                ctx.title = await generate_title(self.llm, text, strategy="llm")
+                ctx.title = await generate_title(
+                    self.llm, text, strategy="llm", output_language=output_language
+                )
                 logger.info(f"   Title: '{ctx.title}' (LLM-generated)")
 
     async def plan_visuals(self, ctx: PipelineContext):
@@ -251,6 +259,16 @@ class StandardPipeline(LinearVideoPipeline):
             final_voice_id = voice_id or tts_voice or "zh-CN-YunjianNeural"
             logger.debug(f"TTS Mode: legacy (voice_id={final_voice_id}, workflow={final_tts_workflow})")
             
+        subtitle_settings = ctx.params.get("subtitle_settings") or {}
+        secondary_subtitles = []
+        if subtitle_settings.get("mode") == "bilingual":
+            target_language = (
+                "English" if ctx.params.get("output_language", "ta") == "ta" else "Tamil"
+            )
+            secondary_subtitles = await generate_subtitle_translations(
+                self.llm, ctx.narrations, target_language
+            )
+
         # Create config
         ctx.config = StoryboardConfig(
             task_id=ctx.task_id,
@@ -270,7 +288,8 @@ class StandardPipeline(LinearVideoPipeline):
             media_workflow=ctx.params.get("media_workflow"),
             api_video_params=ctx.params.get("api_video_params"),
             frame_template=ctx.params.get("frame_template") or "1080x1920/default.html",
-            template_params=ctx.params.get("template_params")
+            template_params=ctx.params.get("template_params"),
+            subtitle_settings=subtitle_settings,
         )
         
         # Create storyboard
@@ -287,6 +306,9 @@ class StandardPipeline(LinearVideoPipeline):
                 index=i,
                 narration=narration,
                 image_prompt=image_prompt,
+                secondary_subtitle=(
+                    secondary_subtitles[i] if i < len(secondary_subtitles) else None
+                ),
                 created_at=datetime.now()
             )
             ctx.storyboard.frames.append(frame)

@@ -21,7 +21,7 @@ from pathlib import Path
 import streamlit as st
 from loguru import logger
 
-from web.i18n import tr, get_language
+from web.i18n import tr
 from web.utils.async_helpers import run_async
 from pixelle_video.models.progress import ProgressEvent
 from pixelle_video.config import config_manager
@@ -48,6 +48,7 @@ def render_single_output(pixelle_video, video_params):
     title = video_params.get("title")
     n_scenes = video_params.get("n_scenes", 5)
     split_mode = video_params.get("split_mode", "paragraph")
+    output_language = video_params.get("output_language", "ta")
     bgm_path = video_params.get("bgm_path")
     bgm_volume = video_params.get("bgm_volume", 0.2)
     
@@ -62,6 +63,7 @@ def render_single_output(pixelle_video, video_params):
     workflow_key = video_params.get("media_workflow")
     api_video_params = video_params.get("api_video_params")
     prompt_prefix = video_params.get("prompt_prefix", "")
+    subtitle_settings = video_params.get("subtitle_settings")
     
     with st.container(border=True):
         st.markdown(f"**{tr('section.video_generation')}**")
@@ -84,11 +86,7 @@ def render_single_output(pixelle_video, video_params):
 
             from pixelle_video.utils.template_util import get_template_type
             if frame_template and get_template_type(frame_template) == "video" and not workflow_key:
-                st.error(
-                    "请选择视频生成工作流或 API 视频模型后再生成。"
-                    if get_language() == "zh_CN"
-                    else "Please select a video workflow or API video model before generating."
-                )
+                st.error(tr("error.video_workflow_required"))
                 st.stop()
             
             # Show progress
@@ -141,10 +139,12 @@ def render_single_output(pixelle_video, video_params):
                     "title": title if title else None,
                     "n_scenes": n_scenes,
                     "split_mode": split_mode,
+                    "output_language": output_language,
                     "media_workflow": workflow_key,
                     "api_video_params": api_video_params,
                     "frame_template": frame_template,
                     "prompt_prefix": prompt_prefix,
+                    "subtitle_settings": subtitle_settings,
                     "bgm_path": bgm_path,
                     "bgm_volume": bgm_volume if bgm_path else 0.2,
                     "progress_callback": update_progress,
@@ -205,7 +205,7 @@ def render_single_output(pixelle_video, video_params):
                         video_bytes = video_file.read()
                         video_filename = os.path.basename(result.video_path)
                         st.download_button(
-                            label="⬇️ 下载视频" if get_language() == "zh_CN" else "⬇️ Download Video",
+                            label=tr("btn.download_video"),
                             data=video_bytes,
                             file_name=video_filename,
                             mime="video/mp4",

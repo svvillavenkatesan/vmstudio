@@ -356,6 +356,8 @@ class FrameProcessor:
         # Build ext data
         ext = {
             "index": frame.index + 1,
+            "subtitle_settings": config.subtitle_settings or {},
+            "secondary_subtitle": frame.secondary_subtitle or "",
         }
         
         # Add custom template parameters

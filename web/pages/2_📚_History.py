@@ -35,7 +35,7 @@ from web.utils.async_helpers import run_async
 
 # Page config
 st.set_page_config(
-    page_title="History - Pixelle-Video",
+    page_title="வரலாறு - VILLVA MEDIA STUDIO",
     page_icon="📚",
     layout="wide",
 )
@@ -239,7 +239,7 @@ def render_grid_task_card(task: dict, pixelle_video):
         
         # Delete confirmation (show in modal-like way)
         if st.session_state.get(f"confirm_delete_{task_id}", False):
-            st.warning("⚠️ 确认删除?")
+            st.warning(tr("history.action.delete_confirm"))
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("✅", key=f"confirm_yes_{task_id}", use_container_width=True):
@@ -250,9 +250,9 @@ def render_grid_task_card(task: dict, pixelle_video):
                             st.session_state[f"confirm_delete_{task_id}"] = False
                             st.rerun()
                         else:
-                            st.error("删除失败")
+                            st.error(tr("history.action.delete_failed", error=""))
                     except Exception as e:
-                        st.error(f"删除失败: {str(e)}")
+                        st.error(tr("history.action.delete_failed", error=str(e)))
             with col2:
                 if st.button("❌", key=f"confirm_no_{task_id}", use_container_width=True):
                     st.session_state[f"confirm_delete_{task_id}"] = False
@@ -264,7 +264,7 @@ def render_task_detail_modal(task_id: str, pixelle_video):
     detail = run_async(pixelle_video.history.get_task_detail(task_id))
     
     if not detail:
-        st.error("Task not found")
+        st.error(tr("history.detail.not_found"))
         return
     
     metadata = detail["metadata"]

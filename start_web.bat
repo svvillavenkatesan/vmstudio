@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul 2>&1
 
-echo 🚀 Starting Pixelle-Video Web UI...
+echo 🚀 Starting VILLVA MEDIA STUDIO...
 echo.
 
 uv run streamlit run web/app.py

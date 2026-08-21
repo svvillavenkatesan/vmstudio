@@ -26,6 +26,7 @@ Linux Environment Requirements:
 """
 
 import asyncio
+import html as html_lib
 import os
 import re
 import tempfile
@@ -307,6 +308,57 @@ class HTMLFrameGenerator:
         
         return re.sub(PARAM_PATTERN, replacer, html)
 
+    def _inject_subtitle_layer(
+        self,
+        html: str,
+        primary_text: str,
+        secondary_text: str,
+        settings: Dict[str, Any],
+    ) -> str:
+        """Add subtitles after template rendering, never inside generated media."""
+        if not settings.get("enabled", False) or settings.get("mode") == "off":
+            return html
+
+        allowed_fonts = {"Noto Sans Tamil", "Noto Serif Tamil", "Nirmala UI", "Latha"}
+        font = settings.get("font", "Noto Sans Tamil")
+        if font not in allowed_fonts:
+            font = "Noto Sans Tamil"
+        size = max(28, min(int(settings.get("size", 52)), 84))
+        color = settings.get("color", "#FFFFFF")
+        highlight = settings.get("highlight_color", "#FFD54F")
+        position = settings.get("position", "bottom")
+        safe_zone = bool(settings.get("safe_zone", True))
+        offsets = {
+            "top": "top: 150px;",
+            "middle": "top: 50%; transform: translateY(-50%);",
+            "bottom": f"bottom: {260 if safe_zone else 90}px;",
+        }
+        position_css = offsets.get(position, offsets["bottom"])
+        primary = html_lib.escape(primary_text or "")
+        secondary = html_lib.escape(secondary_text or "")
+        primary_class = "villva-primary karaoke" if settings.get("mode") == "karaoke" else "villva-primary"
+        secondary_html = (
+            f'<div class="villva-secondary">{secondary}</div>'
+            if settings.get("mode") == "bilingual" and secondary
+            else ""
+        )
+        layer = f"""
+<style>
+.villva-subtitle-layer {{ position: fixed; left: 7%; right: 7%; {position_css}
+  z-index: 2147483647; text-align: center; pointer-events: none;
+  font-family: '{font}', 'Noto Sans Tamil', 'Nirmala UI', sans-serif; }}
+.villva-subtitle-layer > div {{ display: inline-block; max-width: 100%; padding: 12px 22px;
+  color: {color}; background: rgba(0,0,0,.66); border-radius: 14px;
+  font-size: {size}px; font-weight: 700; line-height: 1.34;
+  text-shadow: 0 2px 5px rgba(0,0,0,.9); overflow-wrap: anywhere; }}
+.villva-subtitle-layer .villva-secondary {{ display: block; width: fit-content; margin: 8px auto 0;
+  font-size: {max(24, int(size * .72))}px; font-weight: 600; }}
+.villva-subtitle-layer .karaoke {{ color: {highlight}; }}
+</style>
+<div class="villva-subtitle-layer"><div class="{primary_class}">{primary}</div>{secondary_html}</div>
+"""
+        return html.replace("</body>", f"{layer}</body>") if "</body>" in html else html + layer
+
     @classmethod
     async def _ensure_browser(cls):
         """Lazily initialize a shared Playwright browser instance"""
@@ -414,9 +466,11 @@ class HTMLFrameGenerator:
                 image = image_path.as_uri()
                 logger.debug(f"Converted image path to: {image}")
         
+        original_text = text
+        subtitle_settings = (ext or {}).get("subtitle_settings", {})
         context = {
             "title": title,
-            "text": text,
+            "text": "" if subtitle_settings.get("enabled", False) else text,
             "image": image,
         }
         
@@ -424,6 +478,12 @@ class HTMLFrameGenerator:
             context.update(ext)
         
         html = self._replace_parameters(self.template, context)
+        html = self._inject_subtitle_layer(
+            html,
+            original_text,
+            (ext or {}).get("secondary_subtitle", ""),
+            subtitle_settings,
+        )
 
         if output_path is None:
             from pixelle_video.utils.os_util import get_output_path

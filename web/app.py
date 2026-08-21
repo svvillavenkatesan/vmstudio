@@ -11,7 +11,7 @@
 # limitations under the License.
 
 """
-Pixelle-Video Web UI - Main Entry Point
+VILLVA MEDIA STUDIO - Main Entry Point
 
 This is the entry point for the Streamlit multi-page application.
 Uses st.navigation to define pages and set the default page to Home.
@@ -30,7 +30,7 @@ import streamlit as st
 
 # Setup page config (must be first Streamlit command)
 st.set_page_config(
-    page_title="Pixelle-Video - AI Video Generator",
+    page_title="VILLVA MEDIA STUDIO - தமிழ் AI வீடியோ உருவாக்கம்",
     page_icon="🎬",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -42,14 +42,14 @@ def main():
     # Define pages using st.Page
     home_page = st.Page(
         "pages/1_🎬_Home.py",
-        title="Home",
+        title="வீடியோ உருவாக்கம்",
         icon="🎬",
         default=True
     )
     
     history_page = st.Page(
         "pages/2_📚_History.py",
-        title="History",
+        title="வரலாறு",
         icon="📚"
     )
     

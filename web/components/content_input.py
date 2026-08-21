@@ -40,11 +40,19 @@ def render_content_input():
             # ================================================================
             # Processing mode selection
             mode = st.radio(
-                "Processing Mode",
+                tr("input.mode_selector"),
                 ["generate", "fixed"],
                 horizontal=True,
                 format_func=lambda x: tr(f"mode.{x}"),
                 label_visibility="collapsed"
+            )
+
+            output_language = st.segmented_control(
+                tr("input.output_language"),
+                options=["ta", "en"],
+                default="ta",
+                format_func=lambda code: tr(f"input.output_language.{code}"),
+                help=tr("input.output_language_help"),
             )
             
             # Text input (unified for both modes)
@@ -105,7 +113,8 @@ def render_content_input():
                 "text": text,
                 "title": title,
                 "n_scenes": n_scenes,
-                "split_mode": split_mode
+                "split_mode": split_mode,
+                "output_language": output_language,
             }
         
         else:
@@ -113,6 +122,15 @@ def render_content_input():
             # Batch mode (simplified YAGNI version)
             # ================================================================
             st.markdown(f"**{tr('batch.section_title')}**")
+
+            output_language = st.segmented_control(
+                tr("input.output_language"),
+                options=["ta", "en"],
+                default="ta",
+                format_func=lambda code: tr(f"input.output_language.{code}"),
+                help=tr("input.output_language_help"),
+                key="batch_output_language",
+            )
             
             # Batch rules info
             st.info(f"""
@@ -184,6 +202,7 @@ def render_content_input():
                 "mode": "generate",  # Fixed to AI generate content
                 "title_prefix": title_prefix,
                 "n_scenes": n_scenes,
+                "output_language": output_language,
             }
 
 
