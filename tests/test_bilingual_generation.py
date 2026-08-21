@@ -8,9 +8,32 @@ from pixelle_video.prompts.topic_narration import build_topic_narration_prompt
 from web.i18n import set_language, tr
 from pixelle_video.services.frame_html import HTMLFrameGenerator
 from pixelle_video.utils.content_generators import generate_subtitle_translations
+from web.components.output_preview import requires_llm_configuration
 
 
 class BilingualGenerationTests(unittest.TestCase):
+    def test_fixed_static_video_with_title_does_not_require_llm(self) -> None:
+        self.assertFalse(
+            requires_llm_configuration(
+                {
+                    "mode": "fixed",
+                    "title": "தமிழ் வீடியோ",
+                    "subtitle_settings": {"mode": "standard"},
+                }
+            )
+        )
+
+    def test_bilingual_subtitles_require_llm_translation(self) -> None:
+        self.assertTrue(
+            requires_llm_configuration(
+                {
+                    "mode": "fixed",
+                    "title": "Tamil video",
+                    "subtitle_settings": {"mode": "bilingual"},
+                }
+            )
+        )
+
     def test_tamil_topic_can_request_english_video(self) -> None:
         prompt = build_topic_narration_prompt(
             "பொங்கல்", 3, 5, 20, output_language="English"

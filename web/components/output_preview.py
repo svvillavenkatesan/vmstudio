@@ -27,6 +27,16 @@ from pixelle_video.models.progress import ProgressEvent
 from pixelle_video.config import config_manager
 
 
+def requires_llm_configuration(video_params: dict) -> bool:
+    """Return whether the selected creation path needs an LLM service."""
+    subtitle_settings = video_params.get("subtitle_settings") or {}
+    return (
+        video_params.get("mode", "generate") == "generate"
+        or not video_params.get("title")
+        or subtitle_settings.get("mode") == "bilingual"
+    )
+
+
 def render_output_preview(pixelle_video, video_params):
     """Render output preview section (right column)"""
     # Check if batch mode
@@ -64,18 +74,22 @@ def render_single_output(pixelle_video, video_params):
     api_video_params = video_params.get("api_video_params")
     prompt_prefix = video_params.get("prompt_prefix", "")
     subtitle_settings = video_params.get("subtitle_settings")
+
+    from pixelle_video.utils.template_util import get_template_type
+
+    requires_llm = requires_llm_configuration(video_params)
     
     with st.container(border=True):
         st.markdown(f"**{tr('section.video_generation')}**")
         
         # Check if system is configured
-        if not config_manager.validate():
+        if requires_llm and not config_manager.validate():
             st.warning(tr("settings.not_configured"))
         
         # Generate Button
         if st.button(tr("btn.generate"), type="primary", use_container_width=True):
             # Validate system configuration
-            if not config_manager.validate():
+            if requires_llm and not config_manager.validate():
                 st.error(tr("settings.not_configured"))
                 st.stop()
             
@@ -84,7 +98,6 @@ def render_single_output(pixelle_video, video_params):
                 st.error(tr("error.input_required"))
                 st.stop()
 
-            from pixelle_video.utils.template_util import get_template_type
             if frame_template and get_template_type(frame_template) == "video" and not workflow_key:
                 st.error(tr("error.video_workflow_required"))
                 st.stop()
