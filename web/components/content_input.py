@@ -31,7 +31,8 @@ def render_content_input():
         batch_mode = st.checkbox(
             tr("batch.mode_label"),
             value=False,
-            help=tr("batch.mode_help")
+            help=tr("batch.mode_help"),
+            key="batch_mode",
         )
         
         if not batch_mode:
@@ -44,7 +45,8 @@ def render_content_input():
                 ["generate", "fixed"],
                 horizontal=True,
                 format_func=lambda x: tr(f"mode.{x}"),
-                label_visibility="collapsed"
+                label_visibility="collapsed",
+                key="create_mode",
             )
 
             output_language = st.segmented_control(
@@ -53,6 +55,7 @@ def render_content_input():
                 default="ta",
                 format_func=lambda code: tr(f"input.output_language.{code}"),
                 help=tr("input.output_language_help"),
+                key="output_language",
             )
 
             from pixelle_video.content_modes import CONTENT_MODES
@@ -86,6 +89,7 @@ def render_content_input():
                 list(cultural_styles),
                 format_func=lambda style_id: cultural_styles[style_id],
                 help=tr("cultural_style.help"),
+                key="cultural_style",
             )
             
             # Text input (unified for both modes)
@@ -97,7 +101,8 @@ def render_content_input():
                 tr("input.text"),
                 placeholder=text_placeholder,
                 height=text_height,
-                help=text_help
+                help=text_help,
+                key="topic_text",
             )
             
             # Split mode selector (only show in fixed mode)
@@ -112,7 +117,8 @@ def render_content_input():
                     options=list(split_mode_options.keys()),
                     format_func=lambda x: split_mode_options[x],
                     index=0,  # Default to paragraph mode
-                    help=tr("split.mode_help")
+                    help=tr("split.mode_help"),
+                    key="split_mode",
                 )
             else:
                 split_mode = "paragraph"  # Default for generate mode (not used)
@@ -121,7 +127,8 @@ def render_content_input():
             title = st.text_input(
                 tr("input.title"),
                 placeholder=tr("input.title_placeholder"),
-                help=tr("input.title_help")
+                help=tr("input.title_help"),
+                key="video_title",
             )
             
             # Number of scenes (only show in generate mode)
@@ -132,7 +139,8 @@ def render_content_input():
                     max_value=30,
                     value=5,
                     help=tr("video.frames_help"),
-                    label_visibility="collapsed"
+                    label_visibility="collapsed",
+                    key="n_scenes",
                 )
                 st.caption(tr("video.frames_label", n=n_scenes))
             else:

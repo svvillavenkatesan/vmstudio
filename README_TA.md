@@ -1,4 +1,4 @@
-# VILLVA MEDIA STUDIO
+# VMStudio
 
 தமிழில் short video உருவாக்குவதற்கான AI video studio.
 
@@ -13,6 +13,7 @@
 - Pongal, Tamil culture, temple, Tamil literature, Sangam/Chola history போன்ற தலைப்புகளுக்கான cultural visual context
 - AI-generated image-இல் எழுத்து உருவாக்காமல், final composition layer-ல் Unicode Tamil text overlay
 - Local ComfyUI, RunningHub, அல்லது supported image/video API providers மூலம் media generation
+- `என் திட்டங்கள்` பகுதியில் local autosave, draft-ஐ மீண்டும் திறத்தல் மற்றும் பாதுகாப்பான நீக்குதல்; API keys draft-ல் சேமிக்கப்படாது
 
 ## தொடங்குவது
 

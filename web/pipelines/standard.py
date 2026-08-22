@@ -26,6 +26,7 @@ from web.pipelines.base import PipelineUI, register_pipeline_ui
 from web.components.content_input import render_content_input, render_bgm_section, render_version_info
 from web.components.style_config import render_style_config
 from web.components.output_preview import render_output_preview
+from web.components.project_drafts import autosave_draft, render_project_drafts
 
 
 class StandardPipelineUI(PipelineUI):
@@ -45,6 +46,7 @@ class StandardPipelineUI(PipelineUI):
         return tr("pipeline.quick_create.description")
     
     def render(self, pixelle_video: Any):
+        render_project_drafts()
         # Three-column layout
         left_col, middle_col, right_col = st.columns([1, 1, 1])
         
@@ -79,6 +81,8 @@ class StandardPipelineUI(PipelineUI):
                 **bgm_params,
                 **style_params
             }
+            if not video_params.get("batch_mode"):
+                autosave_draft(video_params)
             
             # Render output preview (generate button, progress, video preview)
             render_output_preview(pixelle_video, video_params)

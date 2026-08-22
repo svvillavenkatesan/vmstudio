@@ -9,6 +9,7 @@ from pixelle_video.script_validation import has_blocking_issues, validate_script
 from pixelle_video.utils.content_generators import generate_narrations_from_topic
 from web.i18n import tr
 from web.utils.async_helpers import run_async
+from web.components.project_drafts import autosave_draft
 
 
 def _review_id(video_params: dict) -> str:
@@ -28,6 +29,12 @@ def render_script_review(pixelle_video, video_params: dict) -> tuple[dict, bool]
 
     review_id = _review_id(video_params)
     state_key = f"script_review_{review_id}"
+    loaded = st.session_state.get("loaded_draft") or {}
+    if state_key not in st.session_state and loaded.get("topic") == video_params.get("text") and loaded.get("narrations"):
+        st.session_state[state_key] = loaded["narrations"]
+        st.session_state[f"script_approved_{review_id}"] = bool(loaded.get("script_approved"))
+        for index, narration in enumerate(loaded["narrations"]):
+            st.session_state[f"script_scene_{review_id}_{index}"] = narration
     st.markdown(f"**{tr('script_review.title')}**")
     st.caption(tr("script_review.help"))
 
@@ -83,6 +90,7 @@ def render_script_review(pixelle_video, video_params: dict) -> tuple[dict, bool]
         key=f"script_approved_{review_id}",
         disabled=has_blocking_issues(issues),
     )
+    autosave_draft(video_params, narrations=edited, script_approved=approved)
     if not approved:
         st.caption(tr("script_review.approval_required"))
         return video_params, False

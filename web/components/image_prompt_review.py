@@ -10,6 +10,7 @@ from pixelle_video.utils.content_generators import generate_image_prompts
 from pixelle_video.utils.template_util import get_template_type
 from web.i18n import tr
 from web.utils.async_helpers import run_async
+from web.components.project_drafts import autosave_draft
 
 
 def _visual_review_id(video_params: dict, narrations: list[str]) -> str:
@@ -33,6 +34,12 @@ def render_image_prompt_review(pixelle_video, video_params: dict, script_ready: 
     narrations = [part.strip() for part in video_params.get("text", "").split("\n\n") if part.strip()]
     review_id = _visual_review_id(video_params, narrations)
     state_key = f"visual_review_{review_id}"
+    loaded = st.session_state.get("loaded_draft") or {}
+    if state_key not in st.session_state and loaded.get("image_prompts"):
+        st.session_state[state_key] = loaded["image_prompts"]
+        st.session_state[f"visual_approved_{review_id}"] = bool(loaded.get("visual_approved"))
+        for index, prompt in enumerate(loaded["image_prompts"]):
+            st.session_state[f"visual_prompt_{review_id}_{index}"] = prompt
 
     st.markdown(f"**{tr('visual_review.title')}**")
     st.caption(tr("visual_review.help"))
@@ -80,6 +87,13 @@ def render_image_prompt_review(pixelle_video, video_params: dict, script_ready: 
         tr("visual_review.approve"),
         key=f"visual_approved_{review_id}",
         disabled=has_blocking_issues(issues),
+    )
+    autosave_draft(
+        video_params,
+        narrations=narrations,
+        script_approved=True,
+        image_prompts=edited,
+        visual_approved=approved,
     )
     if not approved:
         st.caption(tr("visual_review.approval_required"))
