@@ -68,6 +68,7 @@ def render_content_input():
                 mode_ids,
                 format_func=lambda mode_id: mode_labels[mode_id],
                 help=tr("content_mode.help"),
+                key="content_mode",
             )
 
             cultural_styles = {

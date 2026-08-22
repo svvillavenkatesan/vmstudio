@@ -3,6 +3,9 @@
   "t": {
     "app.title": "🎬 VMStudio",
     "app.subtitle": "தமிழுக்கான AI வீடியோ ஸ்டுடியோ",
+    "tts.profile.children": "குழந்தைகள் கதை — மென்மை",
+    "tts.profile.calm": "அமைதியான வாசிப்பு",
+    "tts.profile.motivational": "ஊக்கமளிக்கும் வாசிப்பு",
     "content_mode.label": "உள்ளடக்க வகை",
     "content_mode.help": "ஸ்கிரிப்ட் அமைப்பு மற்றும் காட்சிப் பாணிக்கான தயாரான முறை.",
     "cultural_style.label": "கலாச்சாரப் பாணி",

@@ -3,6 +3,9 @@
   "t": {
     "app.title": "🎬 VMStudio",
     "app.subtitle": "Tamil-first AI Video Studio",
+    "tts.profile.children": "Gentle children's story",
+    "tts.profile.calm": "Calm reading",
+    "tts.profile.motivational": "Motivational reading",
     "content_mode.label": "Content mode",
     "content_mode.help": "A ready-made script structure and visual direction for your video.",
     "cultural_style.label": "Cultural style",

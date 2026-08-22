@@ -28,7 +28,17 @@ TAMIL_VOICE_PROFILES: List[Dict[str, Any]] = [
     {"id": "news", "label_key": "tts.profile.news", "speed": 0.92},
     {"id": "story", "label_key": "tts.profile.story", "speed": 0.88},
     {"id": "poetry", "label_key": "tts.profile.poetry", "speed": 0.82},
+    {"id": "children", "label_key": "tts.profile.children", "speed": 0.9},
+    {"id": "calm", "label_key": "tts.profile.calm", "speed": 0.84},
+    {"id": "motivational", "label_key": "tts.profile.motivational", "speed": 1.06},
 ]
+
+TAMIL_VOICE_PROFILE_MAP = {profile["id"]: profile for profile in TAMIL_VOICE_PROFILES}
+
+
+def get_voice_profile(profile_id: str | None) -> Dict[str, Any]:
+    """Return a valid local Tamil tempo profile with a safe natural fallback."""
+    return TAMIL_VOICE_PROFILE_MAP.get(profile_id or "", TAMIL_VOICE_PROFILE_MAP["natural"])
 
 
 # Edge TTS voice presets for local inference

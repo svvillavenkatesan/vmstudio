@@ -85,6 +85,7 @@ def render_style_config(pixelle_video):
                 TAMIL_VOICE_PROFILES,
                 get_voice_display_name,
             )
+            from pixelle_video.content_modes import get_content_mode
             
             # Get saved voice from config
             local_config = tts_config.get("local", {})
@@ -115,11 +116,16 @@ def render_style_config(pixelle_video):
                 profile["id"]: profile["speed"]
                 for profile in TAMIL_VOICE_PROFILES
             }
+            recommended_profile = get_content_mode(
+                st.session_state.get("content_mode", "story")
+            ).voice_profile
+            recommended_index = profile_options.index(recommended_profile) if recommended_profile in profile_options else 0
             selected_profile = st.selectbox(
                 tr("tts.profile_selector"),
                 profile_options,
                 format_func=lambda profile_id: profile_labels[profile_id],
                 key="tts_tamil_voice_profile",
+                index=recommended_index,
             )
             if st.session_state.get("tts_tamil_voice_profile_last") != selected_profile:
                 st.session_state["tts_local_speed"] = profile_speeds[selected_profile]

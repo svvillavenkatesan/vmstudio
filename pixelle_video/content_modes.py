@@ -15,9 +15,9 @@ class ContentMode:
 
 CONTENT_MODES = (
     ContentMode("story", "தமிழ் கதை", "Tamil story", "hook, setting, conflict, turning point, satisfying ending", "cinematic Tamil storytelling, emotionally coherent scenes", "story"),
-    ContentMode("children_story", "குழந்தைகள் கதை", "Children's story", "gentle hook, simple characters, safe challenge, warm lesson", "colourful child-friendly illustration, warm expressions, safe imagery", "story"),
+    ContentMode("children_story", "குழந்தைகள் கதை", "Children's story", "gentle hook, simple characters, safe challenge, warm lesson", "colourful child-friendly illustration, warm expressions, safe imagery", "children"),
     ContentMode("poetry", "தமிழ் கவிதை", "Tamil poetry", "imagery-led short verses, emotional progression, memorable closing image", "poetic symbolism, soft cinematic light, elegant composition", "poetry"),
-    ContentMode("haiku", "தமிழ் ஹைக்கூ", "Tamil haiku", "three concise image-led moments with silence and nature", "minimal nature composition, contemplative atmosphere", "poetry"),
+    ContentMode("haiku", "தமிழ் ஹைக்கூ", "Tamil haiku", "three concise image-led moments with silence and nature", "minimal nature composition, contemplative atmosphere", "calm"),
     ContentMode("culture", "தமிழ் பண்பாடு", "Tamil culture", "inviting introduction, specific tradition, meaning, present-day relevance", "authentic Tamil material culture, respectful documentary detail", "story"),
     ContentMode("history", "தமிழ் வரலாறு", "Tamil history", "time and place, verified event, people, consequence, legacy", "historically respectful documentary reconstruction, period-appropriate details", "news"),
     ContentMode("education", "தமிழ் கல்வி", "Tamil education", "question, simple explanation, concrete example, recap", "clear educational visual metaphor, uncluttered composition", "natural"),

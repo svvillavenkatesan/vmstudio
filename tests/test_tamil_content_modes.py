@@ -3,6 +3,7 @@ import unittest
 from pixelle_video.content_modes import CONTENT_MODES, get_content_mode_instruction
 from pixelle_video.prompts.topic_narration import build_topic_narration_prompt
 from pixelle_video.utils.prompt_helper import build_image_prompt, build_topic_visual_prefix
+from pixelle_video.tts_voices import get_voice_profile
 
 
 class TamilContentModeTests(unittest.TestCase):
@@ -45,6 +46,17 @@ class TamilContentModeTests(unittest.TestCase):
 
     def test_unknown_mode_falls_back_safely(self):
         self.assertIn("Tamil story", get_content_mode_instruction("not-a-mode"))
+
+    def test_content_modes_recommend_matching_voice_profiles(self):
+        from pixelle_video.content_modes import get_content_mode
+
+        self.assertEqual(get_content_mode("children_story").voice_profile, "children")
+        self.assertEqual(get_content_mode("haiku").voice_profile, "calm")
+        self.assertEqual(get_content_mode("motivation").voice_profile, "motivational")
+
+    def test_voice_profile_has_safe_fallback(self):
+        self.assertEqual(get_voice_profile("children")["speed"], 0.9)
+        self.assertEqual(get_voice_profile("unknown")["id"], "natural")
 
 
 if __name__ == "__main__":
