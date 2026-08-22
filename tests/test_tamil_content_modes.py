@@ -164,6 +164,43 @@ class ScriptValidationTests(unittest.TestCase):
         self.assertTrue(has_blocking_issues(issues))
         self.assertEqual({"scene_count", "empty_scene"}, {issue.code for issue in issues})
 
+    def test_visual_prompt_requesting_embedded_text_is_blocking(self):
+        from pixelle_video.script_validation import has_blocking_issues, validate_visual_prompts
+
+        issues = validate_visual_prompts(
+            "பொங்கல்",
+            [
+                "A clay pot with readable Tamil text on its side",
+                "A colourful kolam beside fresh sugarcane",
+                "A family giving thanks in warm morning light",
+            ],
+            3,
+        )
+        self.assertTrue(has_blocking_issues(issues))
+        self.assertIn("embedded_text", {issue.code for issue in issues})
+
+    def test_pongal_visual_context_warning_does_not_block(self):
+        from pixelle_video.script_validation import has_blocking_issues, validate_visual_prompts
+
+        issues = validate_visual_prompts(
+            "பொங்கல்",
+            ["A family at sunrise", "A village courtyard", "A warm harvest scene"],
+            3,
+        )
+        self.assertFalse(has_blocking_issues(issues))
+        self.assertIn("pongal_visual_context", {issue.code for issue in issues})
+
+    def test_historical_prompt_rejects_modern_objects(self):
+        from pixelle_video.script_validation import has_blocking_issues, validate_visual_prompts
+
+        issues = validate_visual_prompts(
+            "சோழர் வரலாறு",
+            ["A Chola king holding a smartphone", "Stone temple", "Ancient irrigation channel"],
+            3,
+        )
+        self.assertTrue(has_blocking_issues(issues))
+        self.assertIn("historical_mismatch", {issue.code for issue in issues})
+
 
 if __name__ == "__main__":
     unittest.main()

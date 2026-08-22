@@ -26,6 +26,7 @@ from web.utils.async_helpers import run_async
 from pixelle_video.models.progress import ProgressEvent
 from pixelle_video.config import config_manager
 from web.components.script_review import render_script_review
+from web.components.image_prompt_review import render_image_prompt_review
 
 
 def requires_llm_configuration(video_params: dict) -> bool:
@@ -54,6 +55,10 @@ def render_output_preview(pixelle_video, video_params):
 def render_single_output(pixelle_video, video_params):
     """Render single video generation output (original logic, unchanged)"""
     video_params, review_ready = render_script_review(pixelle_video, video_params)
+    video_params, visual_review_ready = render_image_prompt_review(
+        pixelle_video, video_params, review_ready
+    )
+    review_ready = review_ready and visual_review_ready
 
     # Extract parameters from video_params dict
     text = video_params.get("text", "")
@@ -62,6 +67,8 @@ def render_single_output(pixelle_video, video_params):
     n_scenes = video_params.get("n_scenes", 5)
     split_mode = video_params.get("split_mode", "paragraph")
     output_language = video_params.get("output_language", "ta")
+    content_mode = video_params.get("content_mode", "story")
+    cultural_style = video_params.get("cultural_style", "auto")
     bgm_path = video_params.get("bgm_path")
     bgm_volume = video_params.get("bgm_volume", 0.2)
     
@@ -77,6 +84,7 @@ def render_single_output(pixelle_video, video_params):
     api_video_params = video_params.get("api_video_params")
     prompt_prefix = video_params.get("prompt_prefix", "")
     subtitle_settings = video_params.get("subtitle_settings")
+    image_prompts = video_params.get("image_prompts")
 
     from pixelle_video.utils.template_util import get_template_type
 
@@ -161,10 +169,13 @@ def render_single_output(pixelle_video, video_params):
                     "n_scenes": n_scenes,
                     "split_mode": split_mode,
                     "output_language": output_language,
+                    "content_mode": content_mode,
+                    "cultural_style": cultural_style,
                     "media_workflow": workflow_key,
                     "api_video_params": api_video_params,
                     "frame_template": frame_template,
                     "prompt_prefix": prompt_prefix,
+                    "image_prompts": image_prompts,
                     "subtitle_settings": subtitle_settings,
                     "bgm_path": bgm_path,
                     "bgm_volume": bgm_volume if bgm_path else 0.2,
