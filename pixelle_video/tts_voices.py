@@ -36,6 +36,19 @@ TAMIL_VOICE_PROFILES: List[Dict[str, Any]] = [
 TAMIL_VOICE_PROFILE_MAP = {profile["id"]: profile for profile in TAMIL_VOICE_PROFILES}
 
 
+def get_voices_for_output_language(output_language: str | None) -> List[Dict[str, Any]]:
+    """Return only voices appropriate for the selected video language."""
+    language = (output_language or "ta").lower()
+    locale_prefixes = ("en-US", "en-GB") if language in {"en", "english"} else ("ta-IN",)
+    return [voice for voice in EDGE_TTS_VOICES if voice["locale"].startswith(locale_prefixes)]
+
+
+def get_preview_text(output_language: str | None) -> str:
+    if (output_language or "ta").lower() in {"en", "english"}:
+        return "Hello! This is a VMStudio voice preview."
+    return "வணக்கம்! இது வி எம் ஸ்டுடியோ தமிழ் குரல் முன்னோட்டம்."
+
+
 def get_voice_profile(profile_id: str | None) -> Dict[str, Any]:
     """Return a valid local Tamil tempo profile with a safe natural fallback."""
     return TAMIL_VOICE_PROFILE_MAP.get(profile_id or "", TAMIL_VOICE_PROFILE_MAP["natural"])

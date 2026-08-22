@@ -283,6 +283,7 @@
     "tts.previewing": "正在生成 TTS 预览...",
     "tts.preview_success": "✅ 预览生成成功！",
     "tts.preview_failed": "❌ 预览失败：{error}",
+    "tts.preview_no_audio": "No audio was received. Check the internet connection and try again.",
     "welcome.first_time": "🎉 欢迎使用 Pixelle-Video！请先完成基础配置",
     "welcome.config_hint": "💡 首次使用需要配置 API Key，后续可以在高级设置中修改",
     "wizard.llm_required": "🤖 大语言模型配置（必需）",

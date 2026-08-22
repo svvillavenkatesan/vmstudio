@@ -300,6 +300,7 @@
     "tts.previewing": "Generating TTS preview...",
     "tts.preview_success": "✅ Preview generated successfully!",
     "tts.preview_failed": "❌ Preview failed: {error}",
+    "tts.preview_no_audio": "No audio was received. Check the internet connection and try again.",
     "welcome.first_time": "🎉 Welcome to Pixelle-Video! Please complete basic configuration",
     "welcome.config_hint": "💡 First-time setup requires API Key configuration, you can modify it in advanced settings later",
     "wizard.llm_required": "🤖 Large Language Model Configuration (Required)",

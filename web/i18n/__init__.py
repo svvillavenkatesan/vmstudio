@@ -170,6 +170,7 @@ _TAMIL_FIRST_OVERRIDES = {
     "tts.previewing": "குரல் முன்னோட்டம் உருவாகிறது...",
     "tts.preview_success": "✅ குரல் முன்னோட்டம் தயார்.",
     "tts.preview_failed": "குரல் முன்னோட்டம் தோல்வி: {error}",
+    "tts.preview_no_audio": "குரல் சேவையிலிருந்து audio கிடைக்கவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
     "template.gallery_view": "வடிவமைப்புகள்",
     "template.preview_title": "வடிவமைப்பு முன்னோட்டம்",
     "template.preview_button": "🖼️ முன்னோட்டம் உருவாக்கு",

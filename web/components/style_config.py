@@ -81,9 +81,10 @@ def render_style_config(pixelle_video):
         if tts_mode == "local":
             # Import voice configuration
             from pixelle_video.tts_voices import (
-                EDGE_TTS_VOICES,
                 TAMIL_VOICE_PROFILES,
                 get_voice_display_name,
+                get_voices_for_output_language,
+                get_preview_text,
             )
             from pixelle_video.content_modes import get_content_mode
             
@@ -97,7 +98,9 @@ def render_style_config(pixelle_video):
             voice_ids = []
             default_voice_index = 0
             
-            for idx, voice_config in enumerate(EDGE_TTS_VOICES):
+            output_language = st.session_state.get("output_language", "ta")
+            available_voices = get_voices_for_output_language(output_language)
+            for idx, voice_config in enumerate(available_voices):
                 voice_id = voice_config["id"]
                 display_name = get_voice_display_name(voice_id, tr, get_language())
                 voice_options.append(display_name)
@@ -106,6 +109,9 @@ def render_style_config(pixelle_video):
                 # Set default index if matches saved voice
                 if voice_id == saved_voice:
                     default_voice_index = idx
+
+            if st.session_state.get("tts_local_voice") not in voice_options:
+                st.session_state["tts_local_voice"] = voice_options[default_voice_index]
             
             profile_options = [profile["id"] for profile in TAMIL_VOICE_PROFILES]
             profile_labels = {
@@ -229,10 +235,13 @@ def render_style_config(pixelle_video):
         # TTS Preview (works for both modes)
         # ================================================================
         with st.expander(tr("tts.preview_title"), expanded=False):
+            preview_language = st.session_state.get("output_language", "ta")
+            if st.session_state.get("tts_preview_language") != preview_language:
+                st.session_state["tts_preview_text"] = get_preview_text(preview_language)
+                st.session_state["tts_preview_language"] = preview_language
             # Preview text input
             preview_text = st.text_input(
                 tr("tts.preview_text"),
-                value="大家好，这是一段测试语音。",
                 placeholder=tr("tts.preview_text_placeholder"),
                 key="tts_preview_text"
             )
@@ -272,7 +281,12 @@ def render_style_config(pixelle_video):
                         else:
                             st.error("Failed to generate preview audio")
                     except Exception as e:
-                        st.error(tr("tts.preview_failed", error=str(e)))
+                        message = (
+                            tr("tts.preview_no_audio")
+                            if "No audio was received" in str(e)
+                            else tr("tts.preview_failed", error=str(e))
+                        )
+                        st.error(message)
                         logger.exception(e)
     
     # ====================================================================
