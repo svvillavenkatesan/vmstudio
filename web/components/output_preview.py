@@ -25,6 +25,7 @@ from web.i18n import tr
 from web.utils.async_helpers import run_async
 from pixelle_video.models.progress import ProgressEvent
 from pixelle_video.config import config_manager
+from web.components.script_review import render_script_review
 
 
 def requires_llm_configuration(video_params: dict) -> bool:
@@ -52,6 +53,8 @@ def render_output_preview(pixelle_video, video_params):
 
 def render_single_output(pixelle_video, video_params):
     """Render single video generation output (original logic, unchanged)"""
+    video_params, review_ready = render_script_review(pixelle_video, video_params)
+
     # Extract parameters from video_params dict
     text = video_params.get("text", "")
     mode = video_params.get("mode", "generate")
@@ -87,7 +90,12 @@ def render_single_output(pixelle_video, video_params):
             st.warning(tr("settings.not_configured"))
         
         # Generate Button
-        if st.button(tr("btn.generate"), type="primary", use_container_width=True):
+        if st.button(
+            tr("btn.generate"),
+            type="primary",
+            use_container_width=True,
+            disabled=not review_ready,
+        ):
             # Validate system configuration
             if requires_llm and not config_manager.validate():
                 st.error(tr("settings.not_configured"))

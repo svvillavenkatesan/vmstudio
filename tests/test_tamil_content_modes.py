@@ -134,5 +134,36 @@ class LocalLLMPresetTests(unittest.TestCase):
         )
 
 
+class ScriptValidationTests(unittest.TestCase):
+    def test_pongal_religion_claim_blocks_generation(self):
+        from pixelle_video.script_validation import has_blocking_issues, validate_script
+
+        issues = validate_script(
+            "தமிழர் பாரம்பரியத்தில் பொங்கல்",
+            ["பொங்கல் தமிழர்களின் மதம் என்று தவறாக கூறப்படுகிறது", "அறுவடைக்கு நன்றி", "கரும்பும் கோலமும்"],
+            3,
+        )
+        self.assertTrue(has_blocking_issues(issues))
+        self.assertIn("pongal_religion", {issue.code for issue in issues})
+
+    def test_repeated_scenes_warn_without_blocking(self):
+        from pixelle_video.script_validation import has_blocking_issues, validate_script
+
+        issues = validate_script(
+            "பொங்கல்",
+            ["வாசலில் அழகிய கோலம் வரைகிறார்கள்", "வாசலில் அழகிய கோலம் வரைகிறார்கள்", "கரும்புடன் நன்றி செலுத்துகிறார்கள்"],
+            3,
+        )
+        self.assertFalse(has_blocking_issues(issues))
+        self.assertIn("repeated_scene", {issue.code for issue in issues})
+
+    def test_empty_scene_and_wrong_count_are_blocking(self):
+        from pixelle_video.script_validation import has_blocking_issues, validate_script
+
+        issues = validate_script("தமிழ் கதை", [""], 3)
+        self.assertTrue(has_blocking_issues(issues))
+        self.assertEqual({"scene_count", "empty_scene"}, {issue.code for issue in issues})
+
+
 if __name__ == "__main__":
     unittest.main()
