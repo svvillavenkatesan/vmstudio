@@ -562,6 +562,9 @@
     "draft.new": "➕ New video",
     "draft.delete": "🗑️ Delete",
     "draft.delete_confirm": "Confirm deletion",
-    "draft.untitled": "Untitled project"
+    "draft.untitled": "Untitled project",
+    "art_style.label": "Visual art style",
+    "art_style.help": "Free prompt presets; results depend on the selected image model.",
+    "art_style.applied": "Applied style: {style}"
   }
 }

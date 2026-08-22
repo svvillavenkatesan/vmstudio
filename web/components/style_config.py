@@ -858,19 +858,40 @@ def render_style_config(pixelle_video):
                     default_ratio=default_video_ratio,
                 )
         
+            # Free, model-independent art-style prompt presets.
+            from pixelle_video.art_styles import ART_STYLES, apply_art_style
+
+            style_ids = [style.id for style in ART_STYLES]
+            style_map = {style.id: style for style in ART_STYLES}
+            art_style = st.selectbox(
+                tr("art_style.label"),
+                style_ids,
+                format_func=lambda style_id: (
+                    style_map[style_id].label_en
+                    if get_language() == "en_US"
+                    else style_map[style_id].label_ta
+                ),
+                help=tr("art_style.help"),
+                key="art_style",
+            )
+
             # Prompt prefix input
             # Get current prompt_prefix from config (based on media type)
             current_prefix = comfyui_config.get(media_config_key, {}).get("prompt_prefix", "")
         
             # Prompt prefix input (temporary, not saved to config)
-            prompt_prefix = st.text_area(
+            custom_prompt_prefix = st.text_area(
                 tr('style.prompt_prefix'),
                 value=current_prefix,
                 placeholder=tr("style.prompt_prefix_placeholder"),
                 height=80,
                 label_visibility="visible",
-                help=tr("style.prompt_prefix_help")
+                help=tr("style.prompt_prefix_help"),
+                key="custom_prompt_prefix",
             )
+            prompt_prefix = apply_art_style(custom_prompt_prefix, art_style)
+            if style_map[art_style].prompt:
+                st.caption(tr("art_style.applied", style=style_map[art_style].label_en))
         
             # Media preview expander
             preview_title = tr("style.video_preview_title") if template_media_type == "video" else tr("style.preview_title")
@@ -963,6 +984,7 @@ def render_style_config(pixelle_video):
             # Set default values for later use
             workflow_key = None
             prompt_prefix = ""
+            art_style = "auto"
     
     subtitle_settings = render_subtitle_config()
 
@@ -980,6 +1002,7 @@ def render_style_config(pixelle_video):
         "media_workflow": final_media_workflow,
         "api_video_params": api_video_params if template_media_type == "video" else None,
         "prompt_prefix": prompt_prefix if prompt_prefix else "",
+        "art_style": art_style,
         "media_width": media_width,
         "media_height": media_height,
         "subtitle_settings": subtitle_settings,
