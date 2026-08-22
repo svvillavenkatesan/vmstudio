@@ -22,6 +22,8 @@
     "subtitle.mode.karaoke": "Word highlight",
     "subtitle.mode.bilingual": "Tamil / English bilingual",
     "subtitle.font": "Font",
+    "font.video_text": "Video title font",
+    "font.video_text_help": "Bundled Noto fonts render consistently even when the font is not installed in Windows.",
     "subtitle.size": "Font size",
     "subtitle.color": "Text colour",
     "subtitle.highlight_color": "Highlight colour",

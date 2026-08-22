@@ -8,9 +8,17 @@ from web.i18n import tr
 def render_subtitle_config() -> dict:
     with st.container(border=True):
         st.markdown(f"**{tr('subtitle.title')}**")
+        from pixelle_video.utils.font_manager import FONT_OPTIONS
+
+        font_names = list(FONT_OPTIONS)
+        text_font = st.selectbox(
+            tr("font.video_text"),
+            font_names,
+            help=tr("font.video_text_help"),
+        )
         enabled = st.toggle(tr("subtitle.enabled"), value=True)
         if not enabled:
-            return {"enabled": False, "mode": "off"}
+            return {"enabled": False, "mode": "off", "text_font": text_font}
 
         mode = st.selectbox(
             tr("subtitle.mode"),
@@ -19,7 +27,7 @@ def render_subtitle_config() -> dict:
         )
         font = st.selectbox(
             tr("subtitle.font"),
-            ["Noto Sans Tamil", "Noto Serif Tamil", "Nirmala UI", "Latha"],
+            font_names,
         )
         size = st.slider(tr("subtitle.size"), 28, 84, 52, 2)
         col1, col2 = st.columns(2)
@@ -38,6 +46,7 @@ def render_subtitle_config() -> dict:
             "enabled": True,
             "mode": mode,
             "font": font,
+            "text_font": text_font,
             "size": size,
             "color": color,
             "highlight_color": highlight_color,

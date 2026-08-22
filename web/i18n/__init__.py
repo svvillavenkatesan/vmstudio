@@ -58,6 +58,8 @@ _TAMIL_FIRST_OVERRIDES = {
     "subtitle.mode.karaoke": "வார்த்தை-வார்த்தை உத்திரவாதம்",
     "subtitle.mode.bilingual": "தமிழ் / English இருமொழி",
     "subtitle.font": "எழுத்துரு",
+    "font.video_text": "வீடியோ தலைப்பு எழுத்துரு",
+    "font.video_text_help": "Bundled Noto font பயன்படுத்தப்படுவதால் எல்லா Windows கணினிகளிலும் ஒரே மாதிரியாக வெளிவரும்.",
     "subtitle.size": "எழுத்து அளவு",
     "subtitle.color": "எழுத்து நிறம்",
     "subtitle.highlight_color": "உத்திரவாத நிறம்",

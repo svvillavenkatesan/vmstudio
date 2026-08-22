@@ -319,10 +319,9 @@ class HTMLFrameGenerator:
         if not settings.get("enabled", False) or settings.get("mode") == "off":
             return html
 
-        allowed_fonts = {"Noto Sans Tamil", "Noto Serif Tamil", "Nirmala UI", "Latha"}
-        font = settings.get("font", "Noto Sans Tamil")
-        if font not in allowed_fonts:
-            font = "Noto Sans Tamil"
+        from pixelle_video.utils.font_manager import font_family_css, normalize_font_name
+        font = normalize_font_name(settings.get("font"))
+        font_family = font_family_css(font)
         size = max(28, min(int(settings.get("size", 52)), 84))
         color = settings.get("color", "#FFFFFF")
         highlight = settings.get("highlight_color", "#FFD54F")
@@ -336,28 +335,43 @@ class HTMLFrameGenerator:
         position_css = offsets.get(position, offsets["bottom"])
         primary = html_lib.escape(primary_text or "")
         secondary = html_lib.escape(secondary_text or "")
-        primary_class = "villva-primary karaoke" if settings.get("mode") == "karaoke" else "villva-primary"
+        primary_class = "vmstudio-primary karaoke" if settings.get("mode") == "karaoke" else "vmstudio-primary"
         secondary_html = (
-            f'<div class="villva-secondary">{secondary}</div>'
+            f'<div class="vmstudio-secondary">{secondary}</div>'
             if settings.get("mode") == "bilingual" and secondary
             else ""
         )
         layer = f"""
 <style>
-.villva-subtitle-layer {{ position: fixed; left: 7%; right: 7%; {position_css}
+.vmstudio-subtitle-layer {{ position: fixed; left: 7%; right: 7%; {position_css}
   z-index: 2147483647; text-align: center; pointer-events: none;
-  font-family: '{font}', 'Noto Sans Tamil', 'Nirmala UI', sans-serif; }}
-.villva-subtitle-layer > div {{ display: inline-block; max-width: 100%; padding: 12px 22px;
+  font-family: {font_family}; }}
+.vmstudio-subtitle-layer > div {{ display: inline-block; max-width: 100%; padding: 12px 22px;
   color: {color}; background: rgba(0,0,0,.66); border-radius: 14px;
   font-size: {size}px; font-weight: 700; line-height: 1.34;
   text-shadow: 0 2px 5px rgba(0,0,0,.9); overflow-wrap: anywhere; }}
-.villva-subtitle-layer .villva-secondary {{ display: block; width: fit-content; margin: 8px auto 0;
+.vmstudio-subtitle-layer .vmstudio-secondary {{ display: block; width: fit-content; margin: 8px auto 0;
   font-size: {max(24, int(size * .72))}px; font-weight: 600; }}
-.villva-subtitle-layer .karaoke {{ color: {highlight}; }}
+.vmstudio-subtitle-layer .karaoke {{ color: {highlight}; }}
 </style>
-<div class="villva-subtitle-layer"><div class="{primary_class}">{primary}</div>{secondary_html}</div>
+<div class="vmstudio-subtitle-layer"><div class="{primary_class}">{primary}</div>{secondary_html}</div>
 """
         return html.replace("</body>", f"{layer}</body>") if "</body>" in html else html + layer
+
+    def _inject_tamil_font_pack(self, html: str, settings: Dict[str, Any]) -> str:
+        """Embed bundled fonts and apply the chosen font to composed video text."""
+        from pixelle_video.utils.font_manager import bundled_font_face_css, font_family_css
+
+        family = font_family_css(settings.get("text_font", "Noto Sans Tamil"))
+        css = f"""
+<style>
+{bundled_font_face_css()}
+body, header, .title, .headline, .tag, .brand, .eyebrow, .signature {{
+  font-family: {family} !important;
+}}
+</style>
+"""
+        return html.replace("</head>", f"{css}</head>") if "</head>" in html else css + html
 
     @classmethod
     async def _ensure_browser(cls):
@@ -478,6 +492,7 @@ class HTMLFrameGenerator:
             context.update(ext)
         
         html = self._replace_parameters(self.template, context)
+        html = self._inject_tamil_font_pack(html, subtitle_settings)
         html = self._inject_subtitle_layer(
             html,
             original_text,
