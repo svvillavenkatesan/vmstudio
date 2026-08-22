@@ -30,6 +30,9 @@ The user will input a topic or theme. You need to create {n_storyboard} video st
 # Input Topic
 {topic}
 
+## Selected Content Mode
+{content_mode_instruction}
+
 # Output Requirements
 
 ## Selected Output Language
@@ -142,6 +145,7 @@ def build_topic_narration_prompt(
     min_words: int,
     max_words: int,
     output_language: str = "the same language as the input",
+    content_mode: str = "story",
 ) -> str:
     """
     Build topic narration prompt
@@ -155,11 +159,14 @@ def build_topic_narration_prompt(
     Returns:
         Formatted prompt
     """
+    from pixelle_video.content_modes import get_content_mode_instruction
+
     return TOPIC_NARRATION_PROMPT.format(
         topic=topic,
         n_storyboard=n_storyboard,
         min_words=min_words,
         max_words=max_words,
         output_language=output_language,
+        content_mode_instruction=get_content_mode_instruction(content_mode),
     )
 

@@ -54,6 +54,38 @@ def render_content_input():
                 format_func=lambda code: tr(f"input.output_language.{code}"),
                 help=tr("input.output_language_help"),
             )
+
+            from pixelle_video.content_modes import CONTENT_MODES
+            from web.i18n import get_language
+
+            mode_ids = [item.id for item in CONTENT_MODES]
+            mode_labels = {
+                item.id: item.label_en if get_language() == "en_US" else item.label_ta
+                for item in CONTENT_MODES
+            }
+            content_mode = st.selectbox(
+                tr("content_mode.label"),
+                mode_ids,
+                format_func=lambda mode_id: mode_labels[mode_id],
+                help=tr("content_mode.help"),
+            )
+
+            cultural_styles = {
+                "auto": tr("cultural_style.auto"),
+                "general_tamil": tr("cultural_style.general_tamil"),
+                "rural_tamil": tr("cultural_style.rural_tamil"),
+                "modern_chennai": tr("cultural_style.modern_chennai"),
+                "chettinad": tr("cultural_style.chettinad"),
+                "chola": tr("cultural_style.chola"),
+                "sangam": tr("cultural_style.sangam"),
+                "temple_arts": tr("cultural_style.temple_arts"),
+            }
+            cultural_style = st.selectbox(
+                tr("cultural_style.label"),
+                list(cultural_styles),
+                format_func=lambda style_id: cultural_styles[style_id],
+                help=tr("cultural_style.help"),
+            )
             
             # Text input (unified for both modes)
             text_placeholder = tr("input.topic_placeholder") if mode == "generate" else tr("input.content_placeholder")
@@ -115,6 +147,8 @@ def render_content_input():
                 "n_scenes": n_scenes,
                 "split_mode": split_mode,
                 "output_language": output_language,
+                "content_mode": content_mode,
+                "cultural_style": cultural_style,
             }
         
         else:
@@ -203,6 +237,8 @@ def render_content_input():
                 "title_prefix": title_prefix,
                 "n_scenes": n_scenes,
                 "output_language": output_language,
+                "content_mode": "shorts",
+                "cultural_style": "auto",
             }
 
 

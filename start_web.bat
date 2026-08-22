@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul 2>&1
 
-echo 🚀 Starting VILLVA MEDIA STUDIO...
+echo Starting VMStudio...
 echo.
 
 uv run streamlit run web/app.py

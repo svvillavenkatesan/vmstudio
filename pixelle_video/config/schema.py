@@ -121,8 +121,8 @@ class TemplateConfig(BaseModel):
 
 
 class PixelleVideoConfig(BaseModel):
-    """VILLVA MEDIA STUDIO main configuration"""
-    project_name: str = Field(default="VILLVA MEDIA STUDIO", description="Project name")
+    """VMStudio main configuration"""
+    project_name: str = Field(default="VMStudio", description="Project name")
     llm: LLMConfig = Field(default_factory=LLMConfig)
     api_providers: APIProvidersConfig = Field(default_factory=APIProvidersConfig)
     comfyui: ComfyUIConfig = Field(default_factory=ComfyUIConfig)

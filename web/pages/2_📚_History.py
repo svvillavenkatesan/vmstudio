@@ -35,7 +35,7 @@ from web.utils.async_helpers import run_async
 
 # Page config
 st.set_page_config(
-    page_title="வரலாறு - VILLVA MEDIA STUDIO",
+    page_title="வரலாறு - VMStudio",
     page_icon="📚",
     layout="wide",
 )

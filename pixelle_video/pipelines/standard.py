@@ -122,6 +122,7 @@ class StandardPipeline(LinearVideoPipeline):
                 min_words=min_words,
                 max_words=max_words,
                 output_language=output_language,
+                content_mode=ctx.params.get("content_mode", "story"),
             )
             logger.info(f"✅ Generated {len(ctx.narrations)} narrations")
         else:  # fixed
@@ -181,6 +182,13 @@ class StandardPipeline(LinearVideoPipeline):
             self._report_progress(ctx.progress_callback, "generating_image_prompts", 0.15)
             
             prompt_prefix = ctx.params.get("prompt_prefix")
+            from pixelle_video.utils.prompt_helper import build_topic_visual_prefix
+            prompt_prefix = build_topic_visual_prefix(
+                topic=ctx.input_text,
+                prefix=prompt_prefix or "",
+                content_mode=ctx.params.get("content_mode", "story"),
+                cultural_style=ctx.params.get("cultural_style", "auto"),
+            )
             min_words = ctx.params.get("min_image_prompt_words", 30)
             max_words = ctx.params.get("max_image_prompt_words", 60)
             

@@ -28,7 +28,19 @@ _current_language: str = "en_US"  # Default fallback to English
 # other keys, while these high-traffic labels ensure that the core studio is
 # usable in Tamil even while longer help copy is being translated.
 _TAMIL_FIRST_OVERRIDES = {
-    "app.title": "🎬 VILLVA MEDIA STUDIO",
+    "app.title": "🎬 VMStudio",
+    "content_mode.label": "உள்ளடக்க வகை",
+    "content_mode.help": "ஸ்கிரிப்ட் அமைப்பு, காட்சி பாணி மற்றும் குரல் வேகத்திற்கான தயாரான முறை.",
+    "cultural_style.label": "கலாச்சாரப் பாணி",
+    "cultural_style.help": "தவறான கலாச்சார ஊகங்களைத் தவிர்க்க காட்சியின் தமிழ் சூழலைத் தேர்வு செய்யுங்கள்.",
+    "cultural_style.auto": "தலைப்பிலிருந்து தானாக",
+    "cultural_style.general_tamil": "பொதுவான தமிழ்நாடு",
+    "cultural_style.rural_tamil": "கிராமிய தமிழ்நாடு",
+    "cultural_style.modern_chennai": "நவீன சென்னை",
+    "cultural_style.chettinad": "செட்டிநாடு",
+    "cultural_style.chola": "சோழர் காலம்",
+    "cultural_style.sangam": "சங்ககாலம்",
+    "cultural_style.temple_arts": "கோவில் மற்றும் கலை",
     "app.subtitle": "தமிழில் உருவாகும் AI வீடியோ ஸ்டுடியோ",
     "language.select": "🌐 மொழி",
     "section.content_input": "📝 கதை / ஸ்கிரிப்ட்",

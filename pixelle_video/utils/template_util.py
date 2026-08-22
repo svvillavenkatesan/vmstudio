@@ -39,7 +39,7 @@ TAMIL_TEMPLATE_DISPLAY_NAMES = {
 
 
 def get_template_display_name(template_name: str, language: str | None = None) -> str:
-    """Return a Tamil-friendly name for VILLVA templates when selected."""
+    """Return a Tamil-friendly name for VMStudio templates when selected."""
     if language == "ta_IN" and template_name in TAMIL_TEMPLATE_DISPLAY_NAMES:
         return TAMIL_TEMPLATE_DISPLAY_NAMES[template_name]
     return template_name

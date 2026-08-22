@@ -11,7 +11,7 @@
 # limitations under the License.
 
 """
-VILLVA MEDIA STUDIO - Main Entry Point
+VMStudio - Main Entry Point
 
 This is the entry point for the Streamlit multi-page application.
 Uses st.navigation to define pages and set the default page to Home.
@@ -30,7 +30,7 @@ import streamlit as st
 
 # Setup page config (must be first Streamlit command)
 st.set_page_config(
-    page_title="VILLVA MEDIA STUDIO - தமிழ் AI வீடியோ உருவாக்கம்",
+    page_title="VMStudio - தமிழ் AI வீடியோ உருவாக்கம்",
     page_icon="🎬",
     layout="wide",
     initial_sidebar_state="collapsed",

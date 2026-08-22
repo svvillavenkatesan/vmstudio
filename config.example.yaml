@@ -2,7 +2,7 @@
 # Copy this file to config.yaml and fill in your settings
 # ⚠️ Never commit config.yaml to Git!
 
-project_name: VILLVA MEDIA STUDIO
+project_name: VMStudio
 
 # ==================== LLM Configuration ====================
 # Supports any OpenAI SDK compatible API

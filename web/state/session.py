@@ -24,7 +24,7 @@ from web.utils.async_helpers import run_async
 def init_session_state():
     """Initialize session state variables"""
     if "language" not in st.session_state:
-        # VILLVA MEDIA STUDIO is Tamil-first. Users can still select another
+        # VMStudio is Tamil-first. Users can still select another
         # installed locale from the header.
         st.session_state.language = "ta_IN"
 

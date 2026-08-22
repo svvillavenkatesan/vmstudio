@@ -1,11 +1,11 @@
 @echo off
 chcp 65001 >nul 2>&1
-title VILLVA MEDIA STUDIO
+title VMStudio
 cd /d "%~dp0"
 
 echo.
 echo  ================================================
-echo        VILLVA MEDIA STUDIO
+echo        VMStudio
 echo        Tamil-first AI Video Studio
 echo  ================================================
 echo.

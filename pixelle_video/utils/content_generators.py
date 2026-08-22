@@ -102,6 +102,7 @@ async def generate_narrations_from_topic(
     min_words: int = 5,
     max_words: int = 20,
     output_language: str = "the same language as the input",
+    content_mode: str = "story",
 ) -> List[str]:
     """
     Generate narrations from topic using LLM
@@ -126,6 +127,7 @@ async def generate_narrations_from_topic(
         min_words=min_words,
         max_words=max_words,
         output_language=output_language,
+        content_mode=content_mode,
     )
     
     response = await llm_service(

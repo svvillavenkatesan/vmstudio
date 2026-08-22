@@ -3,14 +3,14 @@ chcp 65001 >nul
 setlocal enabledelayedexpansion
 
 echo ========================================
-echo   VILLVA MEDIA STUDIO - Windows Launcher
+echo   VMStudio - Windows Launcher
 echo ========================================
 echo.
 
 :: Set environment variables
 set "PYTHON_HOME=%~dp0python\python311"
 set "PATH=%PYTHON_HOME%;%PYTHON_HOME%\Scripts;%~dp0tools\ffmpeg\bin;%PATH%"
-set "PROJECT_ROOT=%~dp0VILLVA-MEDIA-STUDIO"
+set "PROJECT_ROOT=%~dp0VMStudio"
 
 :: Change to project directory
 cd /d "%PROJECT_ROOT%"
@@ -22,7 +22,7 @@ set "PYTHONPATH=%PROJECT_ROOT%"
 set "PIXELLE_VIDEO_ROOT=%PROJECT_ROOT%"
 
 :: Start Web UI
-echo [Starting] Launching VILLVA MEDIA STUDIO...
+echo [Starting] Launching VMStudio...
 echo Browser will open automatically.
 echo.
 echo Note: Configure API keys and settings in the Web UI.

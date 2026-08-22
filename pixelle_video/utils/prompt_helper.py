@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Prompt helpers for VILLVA MEDIA STUDIO.
+"""Prompt helpers for VMStudio.
 
 The image model is deliberately asked for text-free imagery.  Tamil titles,
 captions, and subtitles belong in the HTML composition layer where Unicode
@@ -43,6 +43,16 @@ _TAMIL_CULTURAL_SIGNALS = {
     ),
 }
 
+_CULTURAL_STYLES = {
+    "general_tamil": "authentic contemporary Tamil Nadu setting, locally appropriate clothing, architecture and objects",
+    "rural_tamil": "authentic rural Tamil Nadu village, local homes, fields, natural materials and traditional everyday clothing",
+    "modern_chennai": "modern Chennai city setting, contemporary Tamil people, locally accurate streets and architecture",
+    "chettinad": "authentic Chettinad setting, heritage courtyard architecture, Athangudi tile patterns and regionally appropriate details",
+    "chola": "historically respectful Chola-period Tamil setting, period-appropriate architecture, dress and objects, no modern items",
+    "sangam": "careful Sangam-era Tamil visual interpretation, period-appropriate landscape, dress and objects, no modern items",
+    "temple_arts": "Tamil temple and performing-arts setting, respectful iconography, traditional textiles and instruments",
+}
+
 
 def get_tamil_cultural_context(prompt: str) -> str:
     """Return a visual context only when the topic explicitly calls for one.
@@ -55,6 +65,22 @@ def get_tamil_cultural_context(prompt: str) -> str:
         if any(signal.casefold() in normalized for signal in signals):
             return context
     return ""
+
+
+def build_topic_visual_prefix(
+    topic: str,
+    prefix: str = "",
+    content_mode: str = "story",
+    cultural_style: str = "auto",
+) -> str:
+    """Build visual context that remains consistent across every scene."""
+    from pixelle_video.content_modes import get_content_mode
+
+    mode = get_content_mode(content_mode)
+    detected_context = get_tamil_cultural_context(topic)
+    selected_context = "" if cultural_style == "auto" else _CULTURAL_STYLES.get(cultural_style, "")
+    parts = [prefix.strip(), mode.visual_preset, selected_context or detected_context]
+    return ", ".join(part for part in parts if part)
 
 
 def build_image_prompt(prompt: str, prefix: str = "") -> str:
