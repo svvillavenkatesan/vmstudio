@@ -59,6 +59,23 @@ class TamilContentModeTests(unittest.TestCase):
         self.assertEqual(get_voice_profile("children")["speed"], 0.9)
         self.assertEqual(get_voice_profile("unknown")["id"], "natural")
 
+    def test_pongal_script_prompt_has_factual_guardrails(self):
+        prompt = build_topic_narration_prompt(
+            "தமிழர் பாரம்பரியத்தில் பொங்கல்", 3, 8, 22, "Tamil", "culture"
+        )
+        self.assertIn("அறுவடைத் திருவிழா", prompt)
+        self.assertIn("அதை மதம் என்று குறிப்பிட வேண்டாம்", prompt)
+        self.assertNotIn("Chinese punctuation", prompt)
+
+    def test_compact_local_prompt_preserves_required_json_key(self):
+        from pixelle_video.prompts.topic_narration import build_compact_topic_narration_prompt
+
+        prompt = build_compact_topic_narration_prompt(
+            "தமிழர் பாரம்பரியத்தில் பொங்கல்", 3, 8, 22, "Tamil", "culture"
+        )
+        self.assertIn('"narrations"', prompt)
+        self.assertIn("ஒரே கருத்தை மீண்டும் சொல்லாதே", prompt)
+
 
 class OfflineVisualPromptTests(unittest.IsolatedAsyncioTestCase):
     async def test_fixed_script_can_use_supplied_prompts_without_llm(self):
@@ -91,6 +108,30 @@ class OfflineVisualPromptTests(unittest.IsolatedAsyncioTestCase):
         core._comfykit_config_hash = "test"
         await core.cleanup()
         self.assertIsNone(core._comfykit)
+
+
+class LocalLLMPresetTests(unittest.TestCase):
+    def test_ollama_preset_uses_tamil_capable_local_model(self):
+        from pixelle_video.llm_presets import get_preset
+
+        preset = get_preset("Ollama")
+        self.assertEqual(preset["base_url"], "http://127.0.0.1:11434/v1")
+        self.assertEqual(preset["model"], "qwen3:1.7b")
+        self.assertEqual(preset["default_api_key"], "ollama")
+
+    def test_qwen3_uses_fast_non_reasoning_mode(self):
+        from pixelle_video.services.llm_service import LLMService
+
+        prompt = LLMService._prepare_prompt_for_model("தமிழில் எழுதுக", "qwen3:1.7b")
+        self.assertTrue(prompt.startswith("/no_think\n"))
+        self.assertEqual(
+            LLMService._prepare_prompt_for_model("தமிழில் எழுதுக", "gpt-4o"),
+            "தமிழில் எழுதுக",
+        )
+        self.assertEqual(
+            LLMService._prepare_kwargs_for_model({}, "qwen3:1.7b")["reasoning_effort"],
+            "none",
+        )
 
 
 if __name__ == "__main__":

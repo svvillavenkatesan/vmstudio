@@ -118,10 +118,17 @@ async def generate_narrations_from_topic(
         List of narration texts
     """
     from pixelle_video.prompts import build_topic_narration_prompt
+    from pixelle_video.prompts.topic_narration import build_compact_topic_narration_prompt
     
     logger.info(f"Generating {n_scenes} narrations from topic: {topic}")
     
-    prompt = build_topic_narration_prompt(
+    base_url = str(getattr(llm_service, "_get_config_value", lambda *_: "")("base_url", ""))
+    prompt_builder = (
+        build_compact_topic_narration_prompt
+        if "127.0.0.1:11434" in base_url or "localhost:11434" in base_url
+        else build_topic_narration_prompt
+    )
+    prompt = prompt_builder(
         topic=topic,
         n_storyboard=n_scenes,
         min_words=min_words,
@@ -141,6 +148,10 @@ async def generate_narrations_from_topic(
     # Parse JSON
     result = _parse_json(response)
     
+    if "narrations" not in result and isinstance(result.get("narrators"), list):
+        logger.warning("Local model returned 'narrators'; accepting it as 'narrations'")
+        result["narrations"] = result["narrators"]
+
     if "narrations" not in result:
         raise ValueError("Invalid response format: missing 'narrations' key")
     

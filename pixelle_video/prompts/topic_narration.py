@@ -30,6 +30,9 @@ The user will input a topic or theme. You need to create {n_storyboard} video st
 # Input Topic
 {topic}
 
+## Tamil Cultural Accuracy Context
+{cultural_context}
+
 ## Selected Content Mode
 {content_mode_instruction}
 
@@ -42,19 +45,11 @@ Write every narration in **{output_language}**. This explicit user selection ove
 - Output language requirement: Strictly use {output_language} for every narration.
 - Purpose: For TTS to generate short video audio, explaining topics in an accessible way
 - Word count limit: Strictly control to {min_words}~{max_words} words (minimum not less than {min_words} words)
-- Ending format: Do not use punctuation at the end of each narration. If there are sentence breaks in the narration, Chinese punctuation (,。?!……:"") must be used to express tone and pauses. Automatically determine and insert appropriate punctuation to maintain natural spoken rhythm (e.g., "Right? Wrong." should have pauses and tonal shifts)
+- Ending format: Use punctuation natural to the selected language so TTS pauses sound fluent. For Tamil, use ordinary Tamil prose punctuation and short spoken sentences.
 - Content requirement: Expand around the topic, each storyboard conveys a valuable viewpoint or insight
 - Style requirement: Like chatting with a friend, accessible, sincere, inspiring, avoid academic and stiff expressions, reject formulaic and template expressions
 - Emotion and tone: Gentle, sincere, enthusiastic, like a friend with insights sharing thoughts
-- Can appropriately cite authoritative content, not mandatory for every output, determine based on the user's input title or content reference whether relevant citations are needed:
-  For science/health topics, can cite Nature, The Lancet, Harvard research, neuroscience findings, etc.;
-  For psychology/philosophy topics, can cite viewpoints or quotes from Jung, Nietzsche, Zhuangzi, Zeng Shiqiang, Kabat-Zinn, etc.;
-  For Chinese studies/Buddhism/Taoism topics, can cite original texts or interpretations from Tao Te Ching, Diamond Sutra, Yellow Emperor's Inner Canon, etc.;
-  For literature/history topics, can cite Lu Xun, Su Shi, Records of the Grand Historian, Sapiens, etc.;
-  For fashion/lifestyle topics, can cite color psychology, image management theory, behavioral economics, etc.
-  Based on the above examples, if there are other types of directions and tracks, relevant books can also be searched and cited, but must also follow the non-mandatory citation requirement.
-
-  If there are citations, integrate them naturally, do not pile them up stiffly, do not fabricate sources.
+- Cite a source only when the supplied context supports it. Never invent a quotation, verse number, date, person, source, or historical claim.
 
 ## Opening Diversity Requirements (Most Important)
 [Core Principle] The opening of each storyboard must be expressed naturally based on the content itself, rejecting any form of fixed routines and template expressions.
@@ -160,6 +155,7 @@ def build_topic_narration_prompt(
         Formatted prompt
     """
     from pixelle_video.content_modes import get_content_mode_instruction
+    from pixelle_video.utils.prompt_helper import get_tamil_script_context
 
     return TOPIC_NARRATION_PROMPT.format(
         topic=topic,
@@ -168,5 +164,37 @@ def build_topic_narration_prompt(
         max_words=max_words,
         output_language=output_language,
         content_mode_instruction=get_content_mode_instruction(content_mode),
+        cultural_context=get_tamil_script_context(topic) if output_language == "Tamil" else "Not applicable.",
     )
+
+
+def build_compact_topic_narration_prompt(
+    topic: str,
+    n_storyboard: int,
+    min_words: int,
+    max_words: int,
+    output_language: str = "Tamil",
+    content_mode: str = "story",
+) -> str:
+    """Short prompt for memory-constrained local models such as Gemma 3 1B."""
+    from pixelle_video.content_modes import get_content_mode_instruction
+    from pixelle_video.utils.prompt_helper import get_tamil_script_context
+
+    if output_language == "Tamil":
+        return f"""தமிழில் இயல்பாகப் பேசும் short-video எழுத்தாளர் நீ.
+தலைப்பு: {topic}
+வடிவம்: {get_content_mode_instruction(content_mode)}
+உறுதியான தகவல்கள்: {get_tamil_script_context(topic)}
+
+சரியாக {n_storyboard} தொடர்ச்சியான காட்சிகளுக்கு narration எழுது.
+ஒவ்வொன்றும் {min_words} முதல் {max_words} சொற்கள் இருக்க வேண்டும்.
+எளிய நவீன தமிழ் மட்டும் பயன்படுத்து. ஒரே கருத்தை மீண்டும் சொல்லாதே.
+கொடுக்கப்பட்ட தகவல்களுக்கு முரணான கருத்து, மத அடையாளம், மேற்கோள் அல்லது தேதி உருவாக்காதே.
+இந்த JSON வடிவத்தை மட்டும் கொடு; key-ஐ மாற்றாதே:
+{{"narrations":["காட்சி ஒன்று","காட்சி இரண்டு","காட்சி மூன்று"]}}"""
+
+    return f"""Write a concise {output_language} short-video script about: {topic}
+Use this structure: {get_content_mode_instruction(content_mode)}
+Return exactly {n_storyboard} distinct narrations of {min_words}-{max_words} words each.
+Return JSON only with this exact key: {{"narrations":["scene one","scene two","scene three"]}}"""
 

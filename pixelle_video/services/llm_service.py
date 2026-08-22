@@ -40,7 +40,7 @@ class LLMService:
     - Anthropic Claude (claude-sonnet-4-5, claude-opus-4, claude-haiku-4)
     - DeepSeek (deepseek-chat)
     - Moonshot Kimi (moonshot-v1-8k, moonshot-v1-32k, moonshot-v1-128k)
-    - Ollama (llama3.2, qwen2.5, mistral, codellama) - FREE & LOCAL!
+    - Ollama (qwen3, gemma3, llama3.2, mistral) - FREE & LOCAL!
     - Any custom provider with OpenAI-compatible API
     
     Usage:
@@ -114,6 +114,21 @@ class LLMService:
             client_kwargs["base_url"] = final_base_url
         
         return AsyncOpenAI(**client_kwargs)
+
+    @staticmethod
+    def _prepare_prompt_for_model(prompt: str, model: str) -> str:
+        """Disable Qwen3 reasoning for short-form production prompts."""
+        if model.lower().startswith("qwen3") and not prompt.lstrip().startswith("/no_think"):
+            return f"/no_think\n{prompt}"
+        return prompt
+
+    @staticmethod
+    def _prepare_kwargs_for_model(kwargs: dict, model: str) -> dict:
+        """Use Ollama's OpenAI-compatible reasoning control for Qwen3."""
+        prepared = dict(kwargs)
+        if model.lower().startswith("qwen3"):
+            prepared.setdefault("reasoning_effort", "none")
+        return prepared
     
     async def __call__(
         self,
@@ -168,6 +183,8 @@ class LLMService:
             or self._get_config_value("model")
             or "gpt-3.5-turbo"  # Default fallback
         )
+        prompt = self._prepare_prompt_for_model(prompt, final_model)
+        kwargs = self._prepare_kwargs_for_model(kwargs, final_model)
         
         logger.debug(f"LLM call: model={final_model}, base_url={client.base_url}, response_type={response_type}")
         

@@ -43,6 +43,27 @@ _TAMIL_CULTURAL_SIGNALS = {
     ),
 }
 
+_TAMIL_SCRIPT_CONTEXT = {
+    ("பொங்கல்", "thai pongal", "pongal"): (
+        "பொங்கல் தமிழர் அறுவடைத் திருவிழா. தை மாதத்தில் கொண்டாடப்படுகிறது. "
+        "புதுப் பானையில் பால் பொங்கச் செய்து நன்றி செலுத்துதல், வாசல் கோலம், "
+        "கரும்பு மற்றும் சூரியனுக்கு மரியாதை செலுத்துதல் முக்கிய கூறுகள். "
+        "அதை மதம் என்று குறிப்பிட வேண்டாம்."
+    ),
+    ("சோழ", "chola"): (
+        "சோழர் வரலாற்றைப் பேசும்போது காலம், இடம் மற்றும் ஆதாரம் உறுதியான தகவல்களை மட்டும் பயன்படுத்து. "
+        "கல்வெட்டுகள், நீர்ப்பாசனம், கடல் வாணிபம், கோவில் கட்டிடக்கலை போன்ற பொருத்தமான கூறுகளைச் சூழலுடன் கூறு."
+    ),
+    ("திருக்குறள்", "thirukkural"): (
+        "திருக்குறள் 133 அதிகாரங்களையும் 1330 குறள்களையும் கொண்டது. "
+        "சரிபார்க்காத குறள் எண் அல்லது மூலவரியை உருவாக்க வேண்டாம்; கருத்தை விளக்கும்போது உரைநடையில் தெளிவாகக் கூறு."
+    ),
+    ("பாரதியார்", "bharathiyar"): (
+        "பாரதியாரைப் பற்றிய உள்ளடக்கத்தில் சரிபார்க்காத பாடல் வரிகளை மேற்கோளாக உருவாக்க வேண்டாம். "
+        "விடுதலை, சமத்துவம், பெண்முன்னேற்றம் மற்றும் தமிழ்ப்பற்று போன்ற அறியப்பட்ட கருப்பொருள்களைத் தெளிவாகச் சொல்."
+    ),
+}
+
 _CULTURAL_STYLES = {
     "general_tamil": "authentic contemporary Tamil Nadu setting, locally appropriate clothing, architecture and objects",
     "rural_tamil": "authentic rural Tamil Nadu village, local homes, fields, natural materials and traditional everyday clothing",
@@ -65,6 +86,15 @@ def get_tamil_cultural_context(prompt: str) -> str:
         if any(signal.casefold() in normalized for signal in signals):
             return context
     return ""
+
+
+def get_tamil_script_context(topic: str) -> str:
+    """Return concise factual anchors for Tamil narration generation."""
+    normalized = topic.casefold()
+    for signals, context in _TAMIL_SCRIPT_CONTEXT.items():
+        if any(signal.casefold() in normalized for signal in signals):
+            return context
+    return "குறிப்பிட்ட தகவல் உறுதியாகத் தெரியாவிட்டால் அதை உருவாக்க வேண்டாம்; பொதுவான, துல்லியமான விளக்கத்தை மட்டும் கொடு."
 
 
 def build_topic_visual_prefix(
