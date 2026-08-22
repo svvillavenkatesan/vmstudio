@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 
 from pixelle_video.content_modes import CONTENT_MODES, get_content_mode_instruction
 from pixelle_video.prompts.topic_narration import build_topic_narration_prompt
@@ -57,6 +58,39 @@ class TamilContentModeTests(unittest.TestCase):
     def test_voice_profile_has_safe_fallback(self):
         self.assertEqual(get_voice_profile("children")["speed"], 0.9)
         self.assertEqual(get_voice_profile("unknown")["id"], "natural")
+
+
+class OfflineVisualPromptTests(unittest.IsolatedAsyncioTestCase):
+    async def test_fixed_script_can_use_supplied_prompts_without_llm(self):
+        from pixelle_video.pipelines.standard import StandardPipeline
+
+        pipeline = object.__new__(StandardPipeline)
+        pipeline.core = SimpleNamespace(config={"comfyui": {"image": {"prompt_prefix": ""}}})
+        context = SimpleNamespace(
+            params={
+                "frame_template": "1080x1920/image_tamil_festival.html",
+                "image_prompts": ["Pongal pot", "sugarcane harvest"],
+                "content_mode": "culture",
+                "cultural_style": "rural_tamil",
+            },
+            input_text="பொங்கல்",
+            narrations=["ஒன்று", "இரண்டு"],
+            progress_callback=None,
+            image_prompts=[],
+        )
+        await pipeline.plan_visuals(context)
+        self.assertEqual(len(context.image_prompts), 2)
+        self.assertIn("Pongal pot", context.image_prompts[0])
+        self.assertIn("no text, no letters", context.image_prompts[0])
+
+    async def test_cleanup_accepts_comfykit_backend_without_close(self):
+        from pixelle_video.service import PixelleVideoCore
+
+        core = object.__new__(PixelleVideoCore)
+        core._comfykit = object()
+        core._comfykit_config_hash = "test"
+        await core.cleanup()
+        self.assertIsNone(core._comfykit)
 
 
 if __name__ == "__main__":

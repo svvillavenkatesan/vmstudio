@@ -212,14 +212,27 @@ class StandardPipeline(LinearVideoPipeline):
                         extra_info=message
                     )
                 
-                # Generate base image prompts
-                base_image_prompts = await generate_image_prompts(
-                    self.llm,
-                    narrations=ctx.narrations,
-                    min_words=min_words,
-                    max_words=max_words,
-                    progress_callback=image_prompt_progress
-                )
+                # A local/offline caller may provide scene prompts directly.
+                # This avoids a hidden cloud LLM dependency when the script is fixed.
+                supplied_prompts = ctx.params.get("image_prompts")
+                if supplied_prompts is not None:
+                    if len(supplied_prompts) != len(ctx.narrations):
+                        raise ValueError(
+                            "image_prompts count must match the narration scene count "
+                            f"({len(supplied_prompts)} != {len(ctx.narrations)})"
+                        )
+                    base_image_prompts = [str(prompt).strip() for prompt in supplied_prompts]
+                    if any(not prompt for prompt in base_image_prompts):
+                        raise ValueError("image_prompts cannot contain empty values")
+                    logger.info("Using supplied offline image prompts")
+                else:
+                    base_image_prompts = await generate_image_prompts(
+                        self.llm,
+                        narrations=ctx.narrations,
+                        min_words=min_words,
+                        max_words=max_words,
+                        progress_callback=image_prompt_progress
+                    )
                 
                 # Apply prompt prefix
                 image_config = self.core.config.get("comfyui", {}).get("image", {})
