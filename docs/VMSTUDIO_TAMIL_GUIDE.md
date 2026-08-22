@@ -9,6 +9,8 @@
 
 VMStudio ஒரு Tamil-first AI short-video studio. ஒரு தலைப்பு அல்லது தயாரான ஸ்கிரிப்டிலிருந்து காட்சிகளைத் திட்டமிட்டு, AI image/video, தமிழ் narration, subtitles, பின்னணி இசை மற்றும் template layout ஆகியவற்றை இணைத்து இறுதி MP4 வீடியோ உருவாக்குகிறது.
 
+Quick Create-ல் `1 நிமிடம் · 4 காட்சிகள்` preset-ஐத் தேர்ந்தெடுத்தால் நான்கு விரிவான narration scenes உருவாகும். Image template-க்கு `Cinematic zoom / pan` தேர்வு செய்தால் ஒவ்வொரு காட்சியும் அதன் narration audio நேரத்திற்கு மட்டும் தனித்த camera movement-உடன் render செய்யப்பட்டு, பின்னர் வரிசையாக இணைக்கப்படும்.
+
 இது தற்போது செயல்படும் Beta தயாரிப்பு. முழுமையான commercial release என்று கருதக்கூடாது. முக்கிய workflow, Tamil content modes, local draft autosave, prompt review, தமிழ் fonts, templates மற்றும் history உள்ளன. One-click installer, பெரிய அளவிலான hardware compatibility testing, அனைத்து error screens மற்றும் முழுமையான release QA இன்னும் வளர்ச்சிப் பணிகளாகும்.
 
 ## 2. தற்போதைய திறன்களின் நிலை

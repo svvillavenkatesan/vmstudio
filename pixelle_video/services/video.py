@@ -604,6 +604,8 @@ class VideoService:
         audio: str,
         output: str,
         fps: int = 30,
+        animation: str = "none",
+        animation_variant: int = 0,
     ) -> str:
         """
         Create video from static image and audio
@@ -641,17 +643,55 @@ class VideoService:
             audio_duration = float(probe['format']['duration'])
             logger.debug(f"Audio duration: {audio_duration:.3f}s")
             
-            # Input image with loop (loop=1 means loop indefinitely)
-            # Use framerate to set input framerate
-            input_image = ffmpeg.input(image, loop=1, framerate=fps)
             input_audio = ffmpeg.input(audio)
+
+            if animation == "cinematic":
+                # A single input frame expands into exactly the number of frames
+                # required by its narration. Do not loop the source: an infinite
+                # first input would prevent later storyboard segments appearing.
+                probe_image = ffmpeg.probe(image)
+                video_stream = next(
+                    stream for stream in probe_image["streams"]
+                    if stream.get("codec_type") == "video"
+                )
+                width = int(video_stream["width"])
+                height = int(video_stream["height"])
+                total_frames = max(1, round(audio_duration * fps))
+                directions = (
+                    ("iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)-on/80"),
+                    ("iw/2-(iw/zoom/2)+6*sin(on/60)", "ih/2-(ih/zoom/2)"),
+                    ("iw/2-(iw/zoom/2)-on/110", "ih/2-(ih/zoom/2)"),
+                    ("iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)+on/100"),
+                )
+                x_expr, y_expr = directions[animation_variant % len(directions)]
+                video_input = ffmpeg.input(image, framerate=fps)
+                video_output = (
+                    video_input.video
+                    .filter(
+                        "zoompan",
+                        z="min(zoom+0.00012,1.07)",
+                        x=x_expr,
+                        y=y_expr,
+                        d=total_frames,
+                        s=f"{width}x{height}",
+                        fps=fps,
+                    )
+                    .filter("fade", type="in", start_time=0, duration=min(0.4, audio_duration / 4))
+                    .filter(
+                        "fade", type="out",
+                        start_time=max(0, audio_duration - 0.4),
+                        duration=min(0.4, audio_duration / 4),
+                    )
+                )
+            else:
+                video_output = ffmpeg.input(image, loop=1, framerate=fps).video
             
             # Combine image and audio
             # Use -t to explicitly set video duration = audio duration
             (
                 ffmpeg
                 .output(
-                    input_image,
+                    video_output,
                     input_audio,
                     output,
                     t=audio_duration,  # Force video duration to match audio exactly

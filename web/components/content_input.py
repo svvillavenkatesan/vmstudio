@@ -91,6 +91,13 @@ def render_content_input():
                 help=tr("cultural_style.help"),
                 key="cultural_style",
             )
+
+            one_minute_mode = st.checkbox(
+                tr("duration.one_minute"),
+                value=st.session_state.get("one_minute_mode", False),
+                help=tr("duration.one_minute_help"),
+                key="one_minute_mode",
+            )
             
             # Text input (unified for both modes)
             text_placeholder = tr("input.topic_placeholder") if mode == "generate" else tr("input.content_placeholder")
@@ -133,14 +140,17 @@ def render_content_input():
             
             # Number of scenes (only show in generate mode)
             if mode == "generate":
+                if one_minute_mode:
+                    st.session_state["n_scenes"] = 4
                 n_scenes = st.slider(
                     tr("video.frames"),
                     min_value=3,
                     max_value=30,
-                    value=5,
+                    value=4 if one_minute_mode else 5,
                     help=tr("video.frames_help"),
                     label_visibility="collapsed",
                     key="n_scenes",
+                    disabled=one_minute_mode,
                 )
                 st.caption(tr("video.frames_label", n=n_scenes))
             else:
@@ -158,6 +168,9 @@ def render_content_input():
                 "output_language": output_language,
                 "content_mode": content_mode,
                 "cultural_style": cultural_style,
+                "one_minute_mode": one_minute_mode,
+                "min_narration_words": 22 if one_minute_mode else 8,
+                "max_narration_words": 32 if one_minute_mode else 22,
             }
         
         else:

@@ -311,6 +311,7 @@ class StandardPipeline(LinearVideoPipeline):
             frame_template=ctx.params.get("frame_template") or "1080x1920/default.html",
             template_params=ctx.params.get("template_params"),
             subtitle_settings=subtitle_settings,
+            image_animation=ctx.params.get("image_animation", "none"),
         )
         
         # Create storyboard

@@ -892,6 +892,14 @@ def render_style_config(pixelle_video):
             prompt_prefix = apply_art_style(custom_prompt_prefix, art_style)
             if style_map[art_style].prompt:
                 st.caption(tr("art_style.applied", style=style_map[art_style].label_en))
+
+            image_animation = st.selectbox(
+                tr("animation.label"),
+                ["cinematic", "none"],
+                format_func=lambda animation_id: tr(f"animation.{animation_id}"),
+                help=tr("animation.help"),
+                key="image_animation",
+            ) if template_media_type == "image" else "none"
         
             # Media preview expander
             preview_title = tr("style.video_preview_title") if template_media_type == "video" else tr("style.preview_title")
@@ -985,6 +993,7 @@ def render_style_config(pixelle_video):
             workflow_key = None
             prompt_prefix = ""
             art_style = "auto"
+            image_animation = "none"
     
     subtitle_settings = render_subtitle_config()
 
@@ -1003,6 +1012,7 @@ def render_style_config(pixelle_video):
         "api_video_params": api_video_params if template_media_type == "video" else None,
         "prompt_prefix": prompt_prefix if prompt_prefix else "",
         "art_style": art_style,
+        "image_animation": image_animation,
         "media_width": media_width,
         "media_height": media_height,
         "subtitle_settings": subtitle_settings,

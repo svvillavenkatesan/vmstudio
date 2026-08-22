@@ -582,6 +582,12 @@
     "draft.untitled": "Untitled project",
     "art_style.label": "Visual art style",
     "art_style.help": "These are free prompt presets. The available look and quality depend on the selected image model.",
-    "art_style.applied": "Applied style: {style}"
+    "art_style.applied": "Applied style: {style}",
+    "duration.one_minute": "⏱️ 1 minute · 4 scenes",
+    "duration.one_minute_help": "Creates an approximately one-minute video using four detailed narration scenes.",
+    "animation.label": "Image motion",
+    "animation.cinematic": "🎥 Cinematic zoom / pan",
+    "animation.none": "Still image",
+    "animation.help": "Adds a distinct camera movement to every AI image for exactly its narration duration."
   }
 }

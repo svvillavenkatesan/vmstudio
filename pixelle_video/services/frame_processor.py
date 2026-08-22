@@ -436,7 +436,9 @@ class FrameProcessor:
                 image=frame.composed_image_path,
                 audio=frame.audio_path,
                 output=output_path,
-                fps=config.video_fps
+                fps=config.video_fps,
+                animation=config.image_animation,
+                animation_variant=frame.index,
             )
         
         else:

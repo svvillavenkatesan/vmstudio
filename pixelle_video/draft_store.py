@@ -16,7 +16,8 @@ from pixelle_video.utils.os_util import get_data_path
 _ID_PATTERN = re.compile(r"^[a-f0-9]{32}$")
 _ALLOWED_FIELDS = {
     "id", "topic", "title", "mode", "output_language", "content_mode",
-    "cultural_style", "art_style", "n_scenes", "split_mode", "narrations",
+    "cultural_style", "art_style", "image_animation", "one_minute_mode",
+    "n_scenes", "split_mode", "narrations",
     "image_prompts", "script_approved", "visual_approved", "updated_at",
 }
 

@@ -54,6 +54,7 @@ class StoryboardConfig:
     frame_template: str = "1080x1920/default.html"  # Template path with size (e.g., "1080x1920/default.html")
     template_params: Optional[Dict[str, Any]] = None  # Custom template parameters (e.g., {"accent_color": "#ff0000"})
     subtitle_settings: Optional[Dict[str, Any]] = None
+    image_animation: str = "none"             # "none" or "cinematic"
 
 
 @dataclass

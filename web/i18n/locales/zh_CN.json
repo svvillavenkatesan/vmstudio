@@ -565,6 +565,12 @@
     "draft.untitled": "Untitled project",
     "art_style.label": "Visual art style",
     "art_style.help": "Free prompt presets; results depend on the selected image model.",
-    "art_style.applied": "Applied style: {style}"
+    "art_style.applied": "Applied style: {style}",
+    "duration.one_minute": "⏱️ 1 minute · 4 scenes",
+    "duration.one_minute_help": "Creates an approximately one-minute video using four narration scenes.",
+    "animation.label": "Image motion",
+    "animation.cinematic": "🎥 Cinematic zoom / pan",
+    "animation.none": "Still image",
+    "animation.help": "Adds camera movement for each narration scene."
   }
 }

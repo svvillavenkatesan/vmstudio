@@ -16,6 +16,8 @@ _WIDGET_FIELDS = {
     "content_mode": "content_mode",
     "cultural_style": "cultural_style",
     "art_style": "art_style",
+    "image_animation": "image_animation",
+    "one_minute_mode": "one_minute_mode",
     "n_scenes": "n_scenes",
     "split_mode": "split_mode",
 }
@@ -78,6 +80,8 @@ def autosave_draft(video_params: dict, **review_values) -> dict | None:
         "content_mode": video_params.get("content_mode", "story"),
         "cultural_style": video_params.get("cultural_style", "auto"),
         "art_style": video_params.get("art_style", "auto"),
+        "image_animation": video_params.get("image_animation", "none"),
+        "one_minute_mode": video_params.get("one_minute_mode", False),
         "n_scenes": video_params.get("n_scenes", 5),
         "split_mode": video_params.get("split_mode", "paragraph"),
         **review_values,
