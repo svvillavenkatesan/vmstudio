@@ -35,6 +35,12 @@ TAMIL_TEMPLATE_DISPLAY_NAMES = {
     "image_tamil_story.html": "🎬 தமிழ் கதை",
     "static_tamil_poetry.html": "📝 தமிழ் கவிதை",
     "image_tamil_education.html": "📚 தமிழ் கல்வி",
+    "image_tamil_festival.html": "🪔 பொங்கல் / தமிழ் விழா",
+    "image_tamil_thirukkural.html": "📜 திருக்குறள் அட்டை",
+    "image_tamil_news.html": "📰 தமிழ் செய்தி",
+    "image_tamil_history.html": "🏛️ கோவில் / தமிழ் வரலாறு",
+    "image_tamil_product.html": "🛍️ தயாரிப்பு விளம்பரம்",
+    "image_tamil_quote_reel.html": "💬 தமிழ் Quote / Reel",
 }
 
 
