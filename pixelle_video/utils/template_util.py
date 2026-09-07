@@ -41,6 +41,10 @@ TAMIL_TEMPLATE_DISPLAY_NAMES = {
     "image_tamil_history.html": "🏛️ கோவில் / தமிழ் வரலாறு",
     "image_tamil_product.html": "🛍️ தயாரிப்பு விளம்பரம்",
     "image_tamil_quote_reel.html": "💬 தமிழ் Quote / Reel",
+    "image_classic_landscape.html": "🖼️ 4:3 பாரம்பரிய கிடைமட்டம்",
+    "video_classic_landscape.html": "🎬 4:3 கிடைமட்ட வீடியோ",
+    "image_portrait_editorial.html": "🖼️ 3:4 செங்குத்துப் படம்",
+    "video_portrait_editorial.html": "🎬 3:4 செங்குத்து வீடியோ",
 }
 
 

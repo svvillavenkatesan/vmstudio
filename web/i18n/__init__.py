@@ -23,6 +23,7 @@ from loguru import logger
 
 _locales: Dict[str, dict] = {}
 _current_language: str = "en_US"  # Default fallback to English
+SUPPORTED_LOCALES = {"ta_IN", "en_US"}
 
 # Tamil-first product vocabulary.  The locale JSON remains the source for all
 # other keys, while these high-traffic labels ensure that the core studio is
@@ -125,9 +126,12 @@ _TAMIL_FIRST_OVERRIDES = {
     "template.type.static": "📄 உரை மைய வடிவம்",
     "template.type.image": "🖼️ படங்களுடன்",
     "template.type.video": "🎬 வீடியோ காட்சிகளுடன்",
-    "template.select_button": "தேர்வு செய்",
+    "template.select_button": "தேர்வு",
     "template.selected": "தேர்ந்தெடுக்கப்பட்டது",
     "template.selected_template": "தற்போதைய வடிவமைப்பு",
+    "template.gallery_select_title": "டெம்ப்லேட்டைத் தேர்வு செய்யுங்கள்",
+    "template.gallery_select_help": "படத்தைப் பார்த்து உங்களுக்குப் பிடித்த வடிவமைப்பின் கீழுள்ள ‘தேர்வு’ பொத்தானை அழுத்துங்கள்.",
+    "template.optional_gallery": "🎨 வேறு டெம்ப்லேட் வேண்டுமா?",
     "history.page_title": "📚 உருவாக்க வரலாறு",
     "history.no_tasks": "இன்னும் எந்த வீடியோவும் உருவாக்கப்படவில்லை",
     "status.generating": "🚀 வீடியோ உருவாகிறது...",
@@ -226,6 +230,8 @@ def load_locales() -> Dict[str, dict]:
     
     for json_file in locales_dir.glob("*.json"):
         lang_code = json_file.stem
+        if lang_code not in SUPPORTED_LOCALES:
+            continue
         try:
             with open(json_file, "r", encoding="utf-8") as f:
                 _locales[lang_code] = json.load(f)
@@ -266,7 +272,7 @@ def tr(key: str, fallback: Optional[str] = None, **kwargs) -> str:
     
     Example:
         tr("app.title")  # => "Pixelle-Video"
-        tr("error.missing_field", field="API Key")  # => "请填写 API Key"
+        tr("error.missing_field", field="API Key")  # => "Please enter API Key"
     """
     locale = _locales.get(_current_language, {})
     translations = locale.get("t", {})

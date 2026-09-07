@@ -347,30 +347,27 @@ def render_style_config(pixelle_video):
         # Import template utilities
         from pixelle_video.utils.template_util import get_templates_grouped_by_size_and_type, get_template_type
         
-        # Template type selector
-        st.markdown(f"**{tr('template.type_selector')}**")
-        
+        # Large media tabs, followed by an aspect-ratio picker.  The ratio list
+        # is derived from installed templates, so adding a new template size is
+        # enough to expose it in the UI.
+        st.markdown(f"**{tr('template.media_selector')}**")
         template_type_options = {
-            'static': tr('template.type.static'),
             'image': tr('template.type.image'),
             'video': tr('template.type.video'),
         }
-        
-        # Radio buttons in horizontal layout
-        selected_template_type = st.radio(
-            tr('template.type_selector'),
+        selected_template_type = st.segmented_control(
+            tr('template.media_selector'),
             options=list(template_type_options.keys()),
-            format_func=lambda x: template_type_options[x],
-            index=1,  # Default to 'image'
+            format_func=lambda value: template_type_options[value],
+            default="image",
             key="template_type_selector",
             label_visibility="collapsed",
-            horizontal=True
-        )
+            selection_mode="single",
+            width="stretch",
+        ) or "image"
         
         # Display hint based on selected type (below radio buttons)
-        if selected_template_type == 'static':
-            st.info(tr('template.type.static_hint'))
-        elif selected_template_type == 'image':
+        if selected_template_type == 'image':
             st.info(tr('template.type.image_hint'))
         elif selected_template_type == 'video':
             st.info(tr('template.type.video_hint'))
@@ -382,12 +379,47 @@ def render_style_config(pixelle_video):
             st.warning(f"No {template_type_options[selected_template_type]} templates found. Please select a different type or add templates.")
             st.stop()
         
-        # Build orientation i18n mapping
-        ORIENTATION_I18N = {
-            'portrait': tr('orientation.portrait'),
-            'landscape': tr('orientation.landscape'),
-            'square': tr('orientation.square')
+        def aspect_ratio(width: int, height: int) -> str:
+            from math import gcd
+            divisor = gcd(width, height)
+            return f"{width // divisor}:{height // divisor}"
+
+        ratio_icons = {
+            "16:9": "▭",
+            "4:3": "▭",
+            "1:1": "□",
+            "3:4": "▯",
+            "9:16": "▯",
         }
+        available_ratios = []
+        for size, templates in grouped_templates.items():
+            if not templates:
+                continue
+            first = templates[0].display_info
+            ratio = aspect_ratio(first.width, first.height)
+            if ratio not in available_ratios:
+                available_ratios.append(ratio)
+
+        preferred_ratio_order = ["16:9", "4:3", "1:1", "3:4", "9:16"]
+        available_ratios.sort(
+            key=lambda ratio: preferred_ratio_order.index(ratio)
+            if ratio in preferred_ratio_order else len(preferred_ratio_order)
+        )
+        default_ratio = "9:16" if "9:16" in available_ratios else available_ratios[0]
+        ratio_state_key = f"template_ratio_{selected_template_type}"
+        if st.session_state.get(ratio_state_key) not in available_ratios:
+            st.session_state[ratio_state_key] = default_ratio
+
+        st.markdown(f"**{tr('template.ratio_selector')}**")
+        selected_ratio = st.segmented_control(
+            tr('template.ratio_selector'),
+            options=available_ratios,
+            format_func=lambda ratio: f"{ratio_icons.get(ratio, '▭')}  {ratio}",
+            key=ratio_state_key,
+            label_visibility="collapsed",
+            selection_mode="single",
+            width="stretch",
+        ) or default_ratio
         
         # Get default template from config
         template_config = pixelle_video.config.get("template", {})
@@ -415,6 +447,20 @@ def render_style_config(pixelle_video):
             # Template type changed, reset to type-specific default
             st.session_state['selected_template'] = type_specific_default
             st.session_state['last_template_type'] = selected_template_type
+
+        # Keep the selected template synchronized with the visible ratio. This
+        # prevents generation from silently using a template from another tab.
+        matching_template_paths = []
+        for templates in grouped_templates.values():
+            for template in templates:
+                info = template.display_info
+                if aspect_ratio(info.width, info.height) == selected_ratio:
+                    matching_template_paths.append(template.template_path)
+        if (
+            matching_template_paths
+            and st.session_state.get('selected_template') not in matching_template_paths
+        ):
+            st.session_state['selected_template'] = matching_template_paths[0]
         
         # Collect size groups and prepare tabs
         size_groups = []
@@ -422,6 +468,10 @@ def render_style_config(pixelle_video):
         
         for size, templates in grouped_templates.items():
             if not templates:
+                continue
+
+            first_template = templates[0].display_info
+            if aspect_ratio(first_template.width, first_template.height) != selected_ratio:
                 continue
             
             # Filter templates to only include those with proper naming convention
@@ -454,28 +504,26 @@ def render_style_config(pixelle_video):
             # Combine: templates with preview first, then without preview
             all_templates = templates_with_preview + templates_without_preview
             
-            # Get orientation from first template in group
-            orientation = ORIENTATION_I18N.get(
-                all_templates[0].display_info.orientation, 
-                all_templates[0].display_info.orientation
-            )
             width = all_templates[0].display_info.width
             height = all_templates[0].display_info.height
             
             # Create tab label
-            tab_label = f"{orientation} {width}×{height}"
+            tab_label = f"{selected_ratio} · {width}×{height}"
             size_labels.append(tab_label)
             size_groups.append(all_templates)
         
-        # Create tabs for each size group (wrapped in expander)
-        with st.expander(tr("template.gallery_view"), expanded=True):
+        # Ratio selection is sufficient for the normal workflow: a matching
+        # default template is already selected automatically. Keep the full
+        # gallery as a small optional control for users who want another look.
+        with st.expander(tr("template.optional_gallery"), expanded=False):
             if size_groups:
                 tabs = st.tabs(size_labels)
                 
                 for tab, all_templates in zip(tabs, size_groups):
                     with tab:
-                        # Create grid layout (5 columns)
-                        num_cols = 5
+                        # Compact optional gallery; it takes no vertical space
+                        # until the user explicitly opens it.
+                        num_cols = 4
                         cols = st.columns(num_cols)
                         
                         for idx, template in enumerate(all_templates):
@@ -486,14 +534,21 @@ def render_style_config(pixelle_video):
                                 
                                 # Display preview image or placeholder
                                 if preview_path and os.path.exists(preview_path):
-                                    st.image(preview_path, use_container_width=True)
+                                    st.image(
+                                        preview_path,
+                                        caption=get_template_display_name(
+                                            template.display_info.name,
+                                            get_language(),
+                                        ),
+                                        width="stretch",
+                                    )
                                 else:
                                     # Placeholder for templates without preview (fixed height, compact layout)
                                     st.markdown(
                                         f"""
                                         <div style="
                                             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                            height: 150px;
+                                            height: 170px;
                                             display: flex;
                                             align-items: center;
                                             justify-content: center;
@@ -520,13 +575,13 @@ def render_style_config(pixelle_video):
                                 
                                 # Select button (unified label)
                                 is_selected = (st.session_state['selected_template'] == template.template_path)
-                                button_label = f"{tr('template.selected')}" if is_selected else tr('template.select_button')
+                                button_label = f"✓ {tr('template.selected')}" if is_selected else tr('template.select_button')
                                 button_type = "primary" if is_selected else "secondary"
                                 
                                 if st.button(
                                     button_label,
                                     key=f"template_{template.template_path}",
-                                    use_container_width=True,
+                                    width="stretch",
                                     type=button_type,
                                 ):
                                     st.session_state['selected_template'] = template.template_path
@@ -548,7 +603,7 @@ def render_style_config(pixelle_video):
                     break
             
         if selected_template_name:
-            st.info(f"📋 {tr('template.selected_template')}: **{selected_template_name}**")
+            st.caption(f"✓ {tr('template.selected_template')}: **{selected_template_name}**")
         
 
         # Display video size from template

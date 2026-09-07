@@ -32,6 +32,7 @@ from web.state.session import init_session_state, init_i18n, get_pixelle_video
 from web.components.header import render_header
 from web.components.settings import render_advanced_settings
 from web.components.faq import render_faq_sidebar
+from web.components.compact_layout import apply_compact_desktop_layout
 
 # Page config
 st.set_page_config(
@@ -47,6 +48,9 @@ def main():
     # Initialize session state and i18n
     init_session_state()
     init_i18n()
+
+    # Desktop-product shell: keep all three creation stages in one viewport.
+    apply_compact_desktop_layout()
     
     # Render header (title + language selector)
     render_header()
@@ -61,27 +65,23 @@ def main():
     render_advanced_settings()
     
     # ========================================================================
-    # Pipeline Selection & Delegation
+    # Simple Creator
     # ========================================================================
     from web.pipelines import get_all_pipeline_uis
     
-    # Get all registered pipelines
+    # VMStudio is a focused Tamil-first creator product. Experimental and
+    # specialist pipelines remain available in the source for future work, but
+    # are intentionally not exposed in the primary user interface.
     pipelines = get_all_pipeline_uis()
-    
-    # Use Tabs for pipeline selection
-    # Note: st.tabs returns a list of containers, one for each tab
-    tab_labels = [f"{p.icon} {p.display_name}" for p in pipelines]
-    tabs = st.tabs(tab_labels)
-    
-    # Render each pipeline in its corresponding tab
-    for i, pipeline in enumerate(pipelines):
-        with tabs[i]:
-            # Show description if available
-            if pipeline.description:
-                st.caption(pipeline.description)
-            
-            # Delegate rendering
-            pipeline.render(pixelle_video)
+    quick_create = next(
+        (pipeline for pipeline in pipelines if pipeline.name == "quick_create"),
+        None,
+    )
+    if quick_create is None:
+        st.error("விரைவான வீடியோ உருவாக்கும் வசதியைத் தொடங்க முடியவில்லை.")
+        return
+
+    quick_create.render(pixelle_video)
 
 
 if __name__ == "__main__":

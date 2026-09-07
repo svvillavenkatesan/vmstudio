@@ -551,18 +551,10 @@ class DigitalHumanPipelineUI(PipelineUI):
                             if mode == "digital" and goods_assets:
                                 reference_image_paths.append(goods_assets[0])
 
-                            subject_prompt = (
-                                "参考图1中的人物面对镜头自然口播。"
-                                if get_language() == "zh_CN"
-                                else "The person in reference image 1 speaks naturally to camera."
-                            )
+                            subject_prompt = "The person in reference image 1 speaks naturally to camera."
                             if mode == "digital" and goods_assets:
-                                subject_prompt += (
-                                    "结合参考图2中的商品，生成竖屏商业口播视频。"
-                                    if get_language() == "zh_CN"
-                                    else "Use the product in reference image 2 and create a vertical product-promotion talking video."
-                                )
-                            prompt = f"{subject_prompt} 口播文案：{text}"
+                                subject_prompt += " Use the product in reference image 2 and create a vertical product-promotion talking video."
+                            prompt = f"{subject_prompt} Spoken narration: {text}"
 
                             final_video_path = os.path.join(task_dir, "final.mp4")
                             duration = int(api_video_params.pop("duration", 5))
@@ -591,10 +583,13 @@ class DigitalHumanPipelineUI(PipelineUI):
                             elif goods_text and goods_text.strip():
                                 generated_text = goods_text
                             else:
+                                output_language = st.session_state.get("output_language", "ta")
+                                narration_language = "Tamil" if output_language == "ta" else "English"
                                 generated_text = await pixelle_video.llm(
                                     prompt=(
-                                        f"请为商品“{goods_title}”写一段适合数字人口播短视频的中文推广文案。"
-                                        "要求自然、有吸引力，控制在80字以内，只输出文案正文。"
+                                        f"Write a natural, engaging product-promotion narration for '{goods_title}' "
+                                        f"in {narration_language}. Keep it suitable for a short talking-head video, "
+                                        "under 80 words, and return only the narration."
                                     ),
                                     temperature=0.7,
                                     max_tokens=300,
@@ -805,10 +800,13 @@ class DigitalHumanPipelineUI(PipelineUI):
                                         height=1920,
                                     )
                                     generated_image_url = media_result.url
+                                    output_language = st.session_state.get("output_language", "ta")
+                                    narration_language = "Tamil" if output_language == "ta" else "English"
                                     generated_text = await pixelle_video.llm(
                                         prompt=(
-                                            f"请为商品“{goods_title}”写一段适合数字人口播短视频的中文推广文案。"
-                                            "要求自然、有吸引力，控制在80字以内，只输出文案正文。"
+                                            f"Write a natural, engaging product-promotion narration for '{goods_title}' "
+                                            f"in {narration_language}. Keep it suitable for a short talking-head video, "
+                                            "under 80 words, and return only the narration."
                                         ),
                                         temperature=0.7,
                                         max_tokens=300,
