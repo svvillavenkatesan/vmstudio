@@ -55,6 +55,7 @@ class StoryboardConfig:
     template_params: Optional[Dict[str, Any]] = None  # Custom template parameters (e.g., {"accent_color": "#ff0000"})
     subtitle_settings: Optional[Dict[str, Any]] = None
     image_animation: str = "none"             # "none" or "cinematic"
+    scene_directions: Optional[List[Dict[str, Any]]] = None
 
 
 @dataclass
@@ -64,6 +65,7 @@ class StoryboardFrame:
     narration: str                             # Narration text
     image_prompt: str                          # Image generation prompt (can be None for text-only or video)
     secondary_subtitle: Optional[str] = None
+    scene_direction: Optional[Dict[str, Any]] = None
     
     # Generated resource paths
     audio_path: Optional[str] = None           # Audio file path (narration)

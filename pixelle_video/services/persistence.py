@@ -349,6 +349,8 @@ class PersistenceService:
             "frame_template": config.frame_template,
             "template_params": config.template_params,
             "subtitle_settings": config.subtitle_settings,
+            "image_animation": config.image_animation,
+            "scene_directions": config.scene_directions,
         }
     
     def _dict_to_config(self, data: Dict[str, Any]) -> StoryboardConfig:
@@ -372,6 +374,8 @@ class PersistenceService:
             frame_template=data.get("frame_template", "1080x1920/default.html"),
             template_params=data.get("template_params"),
             subtitle_settings=data.get("subtitle_settings"),
+            image_animation=data.get("image_animation", "none"),
+            scene_directions=data.get("scene_directions"),
         )
     
     def _frame_to_dict(self, frame: StoryboardFrame) -> Dict[str, Any]:
@@ -381,6 +385,7 @@ class PersistenceService:
             "narration": frame.narration,
             "image_prompt": frame.image_prompt,
             "secondary_subtitle": frame.secondary_subtitle,
+            "scene_direction": frame.scene_direction,
             "audio_path": frame.audio_path,
             "media_type": frame.media_type,
             "image_path": frame.image_path,
@@ -398,6 +403,7 @@ class PersistenceService:
             narration=data["narration"],
             image_prompt=data["image_prompt"],
             secondary_subtitle=data.get("secondary_subtitle"),
+            scene_direction=data.get("scene_direction"),
             audio_path=data.get("audio_path"),
             media_type=data.get("media_type"),
             image_path=data.get("image_path"),

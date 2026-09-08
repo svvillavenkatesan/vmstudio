@@ -27,6 +27,7 @@ from pixelle_video.models.progress import ProgressEvent
 from pixelle_video.config import config_manager
 from web.components.script_review import render_script_review
 from web.components.image_prompt_review import render_image_prompt_review
+from web.components.scene_direction_editor import render_scene_direction_editor
 
 
 def requires_llm_configuration(video_params: dict) -> bool:
@@ -59,6 +60,8 @@ def render_single_output(pixelle_video, video_params):
         pixelle_video, video_params, review_ready
     )
     review_ready = review_ready and visual_review_ready
+    video_params, direction_ready = render_scene_direction_editor(video_params, review_ready)
+    review_ready = review_ready and direction_ready
 
     # Extract parameters from video_params dict
     text = video_params.get("text", "")
@@ -86,6 +89,7 @@ def render_single_output(pixelle_video, video_params):
     subtitle_settings = video_params.get("subtitle_settings")
     image_prompts = video_params.get("image_prompts")
     image_animation = video_params.get("image_animation", "none")
+    scene_directions = video_params.get("scene_directions")
 
     from pixelle_video.utils.template_util import get_template_type
 
@@ -178,6 +182,7 @@ def render_single_output(pixelle_video, video_params):
                     "prompt_prefix": prompt_prefix,
                     "image_prompts": image_prompts,
                     "image_animation": image_animation,
+                    "scene_directions": scene_directions,
                     "subtitle_settings": subtitle_settings,
                     "bgm_path": bgm_path,
                     "bgm_volume": bgm_volume if bgm_path else 0.2,

@@ -255,6 +255,11 @@ class StandardPipeline(LinearVideoPipeline):
             logger.info(f"⚡ Skipped image prompt generation (static template)")
             logger.info(f"   💡 Savings: {len(ctx.narrations)} LLM calls + {len(ctx.narrations)} media generations")
 
+        from pixelle_video.scene_directions import apply_scene_directions
+        ctx.image_prompts = apply_scene_directions(
+            ctx.image_prompts, ctx.params.get("scene_directions")
+        )
+
     async def initialize_storyboard(self, ctx: PipelineContext):
         """Step 5: Create Storyboard object and frames."""
         # === Handle TTS parameter compatibility ===
@@ -312,6 +317,7 @@ class StandardPipeline(LinearVideoPipeline):
             template_params=ctx.params.get("template_params"),
             subtitle_settings=subtitle_settings,
             image_animation=ctx.params.get("image_animation", "none"),
+            scene_directions=ctx.params.get("scene_directions"),
         )
         
         # Create storyboard
@@ -324,6 +330,7 @@ class StandardPipeline(LinearVideoPipeline):
         
         # Create frames
         for i, (narration, image_prompt) in enumerate(zip(ctx.narrations, ctx.image_prompts)):
+            scene_directions = ctx.params.get("scene_directions") or []
             frame = StoryboardFrame(
                 index=i,
                 narration=narration,
@@ -331,6 +338,7 @@ class StandardPipeline(LinearVideoPipeline):
                 secondary_subtitle=(
                     secondary_subtitles[i] if i < len(secondary_subtitles) else None
                 ),
+                scene_direction=(scene_directions[i] if i < len(scene_directions) else None),
                 created_at=datetime.now()
             )
             ctx.storyboard.frames.append(frame)

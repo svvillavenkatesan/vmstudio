@@ -19,6 +19,7 @@ _ALLOWED_FIELDS = {
     "cultural_style", "art_style", "image_animation", "one_minute_mode",
     "n_scenes", "split_mode", "narrations",
     "image_prompts", "script_approved", "visual_approved", "updated_at",
+    "scene_directions",
 }
 
 
