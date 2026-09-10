@@ -20,6 +20,7 @@ Key Feature:
   to ensure perfect sync between audio and video (no padding, no trimming needed)
 """
 
+from pathlib import Path
 from typing import Callable, Optional
 
 import httpx
@@ -230,6 +231,15 @@ class FrameProcessor:
             "image_path": frame.image_path,
             "index": frame.index + 1,  # 1-based index for workflow
         }
+        if "ipadapter" in workflow_name.lower():
+            if not config.character_reference:
+                raise ValueError(
+                    "IP-Adapter workflow requires a character reference image"
+                )
+            reference_path = Path(config.character_reference).resolve()
+            if not reference_path.is_file():
+                raise ValueError("Character reference image was not found")
+            media_params["reference_image"] = str(reference_path)
         media_params.update(api_video_params)
         
         # For video workflows: pass audio duration as target video duration

@@ -567,6 +567,8 @@
     "character.delete": "நீக்கு",
     "character.delete_confirm": "நீக்குவதை உறுதி செய்கிறேன்",
     "character.error": "கதாபாத்திரத்தைச் சேமிக்க முடியவில்லை: {error}",
+    "character.workflow_not_active": "தேர்ந்தெடுத்த workflow reference முகத்தை நேரடியாகப் பயன்படுத்தாது. ஒரே முக consistency-க்கு IP-Adapter Face workflow-ஐத் தேர்வு செய்யுங்கள்.",
+    "character.reference_required": "IP-Adapter Face workflow-க்கு Character Library-லிருந்து ஒரு reference படம் தேவை.",
     "scene_direction.title": "🎭 காட்சி இயக்கம் மற்றும் முகபாவனை",
     "scene_direction.help": "ஒவ்வொரு காட்சியிலும் கதாபாத்திரத்தின் செயல், முகபாவனை மற்றும் கேமரா இயக்கத்தைத் தேர்வு செய்யுங்கள். உண்மையான video model இணைக்கப்படும்வரை இவை AI பட prompt மற்றும் cinematic motion-ஐ வழிநடத்தும்.",
     "scene_direction.scene": "காட்சி {n}",

@@ -870,10 +870,14 @@ def render_style_config(pixelle_video):
         
             # Default to first option (should be runninghub by sorting)
             default_workflow_index = 0
-        
+
             # If user has a saved preference in config, try to match it
             if saved_workflow and saved_workflow in workflow_keys:
                 default_workflow_index = workflow_keys.index(saved_workflow)
+
+            character_workflow = "selfhost/image_sd15_ipadapter_face_lowvram.json"
+            if selected_character and character_workflow in workflow_keys:
+                default_workflow_index = workflow_keys.index(character_workflow)
         
             workflow_display = st.selectbox(
                 "Workflow" if workflow_source != "api" else ("API 模型" if get_language() == "zh_CN" else "API model"),
@@ -900,10 +904,13 @@ def render_style_config(pixelle_video):
                     )
                 else:
                     st.warning(
-                        "当前来源下没有可用工作流。"
-                        if get_language() == "zh_CN"
-                        else "No workflow is available for the selected source."
+                        "No workflow is available for the selected source."
                     )
+
+            if selected_character and workflow_key and "ipadapter" not in workflow_key.lower():
+                st.warning(tr("character.workflow_not_active"))
+            if workflow_key and "ipadapter" in workflow_key.lower() and not selected_character:
+                st.error(tr("character.reference_required"))
             
             # Check and warn for selfhost media workflow (auto popup if not confirmed)
             if workflow_key and not is_api_workflow(workflow_key):
