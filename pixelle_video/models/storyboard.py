@@ -56,6 +56,8 @@ class StoryboardConfig:
     subtitle_settings: Optional[Dict[str, Any]] = None
     image_animation: str = "none"             # "none" or "cinematic"
     scene_directions: Optional[List[Dict[str, Any]]] = None
+    character_profile: Optional[Dict[str, Any]] = None
+    character_reference: Optional[str] = None
 
 
 @dataclass

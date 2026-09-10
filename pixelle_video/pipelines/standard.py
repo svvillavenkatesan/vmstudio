@@ -318,6 +318,8 @@ class StandardPipeline(LinearVideoPipeline):
             subtitle_settings=subtitle_settings,
             image_animation=ctx.params.get("image_animation", "none"),
             scene_directions=ctx.params.get("scene_directions"),
+            character_profile=ctx.params.get("character_profile"),
+            character_reference=ctx.params.get("character_reference"),
         )
         
         # Create storyboard

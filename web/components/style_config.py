@@ -35,6 +35,8 @@ from web.pipelines.api_workflows import (
 from pixelle_video.config import config_manager
 from pixelle_video.utils.template_util import get_template_display_name
 from web.components.subtitle_config import render_subtitle_config
+from web.components.character_library import render_character_library
+from pixelle_video.character_store import character_prompt
 
 
 def is_api_workflow(workflow_key: str | None) -> bool:
@@ -44,6 +46,8 @@ def is_api_workflow(workflow_key: str | None) -> bool:
 
 def render_style_config(pixelle_video):
     """Render style configuration section (middle column)"""
+    selected_character = render_character_library()
+
     # TTS Section (moved from left column)
     # ====================================================================
     with st.container(border=True):
@@ -959,6 +963,9 @@ def render_style_config(pixelle_video):
                 key="custom_prompt_prefix",
             )
             prompt_prefix = apply_art_style(custom_prompt_prefix, art_style)
+            identity_prompt = character_prompt(selected_character)
+            if identity_prompt:
+                prompt_prefix = f"{prompt_prefix}, {identity_prompt}" if prompt_prefix else identity_prompt
             if style_map[art_style].prompt:
                 st.caption(tr("art_style.applied", style=style_map[art_style].label_en))
 
@@ -1085,4 +1092,6 @@ def render_style_config(pixelle_video):
         "media_width": media_width,
         "media_height": media_height,
         "subtitle_settings": subtitle_settings,
+        "character_profile": selected_character,
+        "character_reference": selected_character.get("reference_path") if selected_character else None,
     }

@@ -351,6 +351,8 @@ class PersistenceService:
             "subtitle_settings": config.subtitle_settings,
             "image_animation": config.image_animation,
             "scene_directions": config.scene_directions,
+            "character_profile": config.character_profile,
+            "character_reference": config.character_reference,
         }
     
     def _dict_to_config(self, data: Dict[str, Any]) -> StoryboardConfig:
@@ -376,6 +378,8 @@ class PersistenceService:
             subtitle_settings=data.get("subtitle_settings"),
             image_animation=data.get("image_animation", "none"),
             scene_directions=data.get("scene_directions"),
+            character_profile=data.get("character_profile"),
+            character_reference=data.get("character_reference"),
         )
     
     def _frame_to_dict(self, frame: StoryboardFrame) -> Dict[str, Any]:

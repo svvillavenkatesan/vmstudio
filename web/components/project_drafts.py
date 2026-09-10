@@ -20,6 +20,7 @@ _WIDGET_FIELDS = {
     "one_minute_mode": "one_minute_mode",
     "n_scenes": "n_scenes",
     "split_mode": "split_mode",
+    "character_id": "selected_character_id",
 }
 
 
@@ -84,6 +85,7 @@ def autosave_draft(video_params: dict, **review_values) -> dict | None:
         "one_minute_mode": video_params.get("one_minute_mode", False),
         "n_scenes": video_params.get("n_scenes", 5),
         "split_mode": video_params.get("split_mode", "paragraph"),
+        "character_id": (video_params.get("character_profile") or {}).get("id", ""),
         **review_values,
     }
     draft = save_draft(values, st.session_state.get("active_draft_id"))

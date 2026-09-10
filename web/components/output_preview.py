@@ -90,6 +90,8 @@ def render_single_output(pixelle_video, video_params):
     image_prompts = video_params.get("image_prompts")
     image_animation = video_params.get("image_animation", "none")
     scene_directions = video_params.get("scene_directions")
+    character_profile = video_params.get("character_profile")
+    character_reference = video_params.get("character_reference")
 
     from pixelle_video.utils.template_util import get_template_type
 
@@ -183,6 +185,8 @@ def render_single_output(pixelle_video, video_params):
                     "image_prompts": image_prompts,
                     "image_animation": image_animation,
                     "scene_directions": scene_directions,
+                    "character_profile": character_profile,
+                    "character_reference": character_reference,
                     "subtitle_settings": subtitle_settings,
                     "bgm_path": bgm_path,
                     "bgm_volume": bgm_volume if bgm_path else 0.2,

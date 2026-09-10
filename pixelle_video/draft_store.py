@@ -20,6 +20,7 @@ _ALLOWED_FIELDS = {
     "n_scenes", "split_mode", "narrations",
     "image_prompts", "script_approved", "visual_approved", "updated_at",
     "scene_directions",
+    "character_id",
 }
 
 
