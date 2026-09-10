@@ -568,7 +568,7 @@
     "character.delete": "Delete",
     "character.delete_confirm": "Confirm deletion",
     "character.error": "Could not save character: {error}",
-    "character.workflow_not_active": "The selected workflow does not directly condition on the reference face. Choose the IP-Adapter Face workflow for identity consistency.",
+    "character.workflow_not_active": "The selected workflow does not directly use the reference face. Choose IP-Adapter Face for images or AnimateDiff I2V for video.",
     "character.reference_required": "The IP-Adapter Face workflow requires a reference image from the Character Library.",
     "scene_direction.title": "🎭 Scene motion and expression",
     "scene_direction.help": "Choose each character action, facial expression and camera move. Until a native video model is connected, these guide the AI image prompt and cinematic motion.",

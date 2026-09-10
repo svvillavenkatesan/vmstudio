@@ -54,3 +54,20 @@ def test_four_cinematic_segments_concatenate_in_order(tmp_path):
     service.concat_videos(segments, str(final))
     duration = float(ffmpeg.probe(str(final))["format"]["duration"])
     assert 2.2 <= duration <= 3.0
+
+
+def test_short_ai_motion_clip_can_loop_to_narration_duration(tmp_path):
+    image = tmp_path / "motion.png"
+    audio = tmp_path / "short.wav"
+    clip = tmp_path / "motion.mp4"
+    Image.new("RGB", (192, 256), (40, 100, 180)).save(image)
+    _silent_wav(audio, duration=0.5)
+
+    service = VideoService()
+    service.create_video_from_image(
+        str(image), str(audio), str(clip), fps=8, animation="none"
+    )
+    looped = service._pad_video_to_duration(str(clip), 1.6, "loop")
+
+    duration = float(ffmpeg.probe(looped)["format"]["duration"])
+    assert 1.5 <= duration <= 1.75

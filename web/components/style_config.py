@@ -875,7 +875,11 @@ def render_style_config(pixelle_video):
             if saved_workflow and saved_workflow in workflow_keys:
                 default_workflow_index = workflow_keys.index(saved_workflow)
 
-            character_workflow = "selfhost/image_sd15_ipadapter_face_lowvram.json"
+            character_workflow = (
+                "selfhost/video_sd15_animatediff_i2v_lowvram.json"
+                if template_media_type == "video"
+                else "selfhost/image_sd15_ipadapter_face_lowvram.json"
+            )
             if selected_character and character_workflow in workflow_keys:
                 default_workflow_index = workflow_keys.index(character_workflow)
         
@@ -907,9 +911,16 @@ def render_style_config(pixelle_video):
                         "No workflow is available for the selected source."
                     )
 
-            if selected_character and workflow_key and "ipadapter" not in workflow_key.lower():
+            character_workflow_active = workflow_key and any(
+                marker in workflow_key.lower()
+                for marker in ("ipadapter", "animatediff_i2v")
+            )
+            if selected_character and not character_workflow_active:
                 st.warning(tr("character.workflow_not_active"))
-            if workflow_key and "ipadapter" in workflow_key.lower() and not selected_character:
+            if workflow_key and any(
+                marker in workflow_key.lower()
+                for marker in ("ipadapter", "animatediff_i2v")
+            ) and not selected_character:
                 st.error(tr("character.reference_required"))
             
             # Check and warn for selfhost media workflow (auto popup if not confirmed)

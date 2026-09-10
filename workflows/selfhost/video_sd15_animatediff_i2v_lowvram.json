@@ -1,0 +1,83 @@
+{
+  "1": {
+    "inputs": {"ckpt_name": "v1-5-pruned-emaonly.safetensors"},
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {"title": "Load SD 1.5 Checkpoint"}
+  },
+  "2": {
+    "inputs": {"model_name": "mm_sd15_v3.safetensors"},
+    "class_type": "ADE_LoadAnimateDiffModel",
+    "_meta": {"title": "Load AnimateDiff Motion Model"}
+  },
+  "3": {
+    "inputs": {"motion_model": ["2", 0]},
+    "class_type": "ADE_ApplyAnimateDiffModelSimple",
+    "_meta": {"title": "Apply Character Motion"}
+  },
+  "4": {
+    "inputs": {"model": ["1", 0], "beta_schedule": "autoselect", "m_models": ["3", 0]},
+    "class_type": "ADE_UseEvolvedSampling",
+    "_meta": {"title": "Use AnimateDiff Sampling"}
+  },
+  "5": {
+    "inputs": {"text": "cinematic natural character movement, subtle facial expression, gentle body motion, stable camera, authentic Tamil setting, detailed, no text", "clip": ["1", 1]},
+    "class_type": "CLIPTextEncode",
+    "_meta": {"title": "$prompt.text!"}
+  },
+  "6": {
+    "inputs": {"text": "text, letters, watermark, logo, flicker, jitter, blur, deformed face, duplicate person, malformed hands, extra limbs", "clip": ["1", 1]},
+    "class_type": "CLIPTextEncode",
+    "_meta": {"title": "$negative_prompt.text"}
+  },
+  "7": {
+    "inputs": {"image": "reference.png"},
+    "class_type": "LoadImage",
+    "_meta": {"title": "$reference_image.~image!"}
+  },
+  "8": {
+    "inputs": {"image": ["7", 0], "upscale_method": "lanczos", "width": 384, "height": 512, "crop": "center"},
+    "class_type": "ImageScale",
+    "_meta": {"title": "Low VRAM Portrait Size"}
+  },
+  "9": {
+    "inputs": {"pixels": ["8", 0], "vae": ["1", 2]},
+    "class_type": "VAEEncode",
+    "_meta": {"title": "Encode Reference Image"}
+  },
+  "10": {
+    "inputs": {"samples": ["9", 0], "amount": 8},
+    "class_type": "RepeatLatentBatch",
+    "_meta": {"title": "Eight Animation Frames"}
+  },
+  "11": {
+    "inputs": {
+      "seed": 0,
+      "steps": 12,
+      "cfg": 5.5,
+      "sampler_name": "ddim",
+      "scheduler": "normal",
+      "denoise": 0.5,
+      "model": ["4", 0],
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "latent_image": ["10", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": {"title": "Low VRAM Motion Sampler, $seed.seed"}
+  },
+  "12": {
+    "inputs": {"samples": ["11", 0], "vae": ["1", 2]},
+    "class_type": "VAEDecode",
+    "_meta": {"title": "Decode Animation Frames"}
+  },
+  "13": {
+    "inputs": {"images": ["12", 0], "fps": 8.0},
+    "class_type": "CreateVideo",
+    "_meta": {"title": "Create Preview Video"}
+  },
+  "14": {
+    "inputs": {"video": ["13", 0], "filename_prefix": "vmstudio_animatediff", "format": "mp4", "codec": "h264"},
+    "class_type": "SaveVideo",
+    "_meta": {"title": "Save MP4 Video"}
+  }
+}

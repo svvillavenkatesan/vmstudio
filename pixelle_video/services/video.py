@@ -305,7 +305,7 @@ class VideoService:
         replace_audio: bool = True,
         audio_volume: float = 1.0,
         video_volume: float = 0.0,
-        pad_strategy: str = "freeze",  # "freeze" (freeze last frame) or "black" (black screen)
+        pad_strategy: str = "freeze",  # "freeze", "loop", or "black"
         auto_adjust_duration: bool = True,  # Automatically adjust video duration to match audio
         duration_tolerance: float = 0.3,  # Tolerance for video being longer than audio (seconds)
     ) -> str:
@@ -332,6 +332,7 @@ class VideoService:
                          Only used when replace_audio=False
             pad_strategy: Strategy to pad video if audio is longer
                          - "freeze": Freeze last frame (default)
+                         - "loop": Repeat a short motion clip
                          - "black": Fill with black screen
             auto_adjust_duration: Enable intelligent duration adjustment (default: True)
             duration_tolerance: Tolerance for video being longer than audio in seconds (default: 0.3)
@@ -964,7 +965,7 @@ class VideoService:
         Args:
             video: Input video file path
             target_duration: Target duration in seconds
-            pad_strategy: Padding strategy - "freeze" (freeze last frame) or "black" (black screen)
+            pad_strategy: Padding strategy - "freeze", "loop", or "black"
         
         Returns:
             Path to padded video (temp file)
@@ -985,7 +986,18 @@ class VideoService:
             input_video = ffmpeg.input(video)
             video_stream = input_video.video
             
-            if pad_strategy == "freeze":
+            if pad_strategy == "loop":
+                # Repeat a short generated motion clip to match longer narration.
+                # This keeps visible movement throughout the scene on low-VRAM
+                # systems where generating every narration frame is impractical.
+                (
+                    ffmpeg
+                    .input(video, stream_loop=-1, t=target_duration)
+                    .output(output, vcodec='libx264', preset='fast', crf=23, an=None)
+                    .overwrite_output()
+                    .run(capture_stdout=True, capture_stderr=True, quiet=True)
+                )
+            elif pad_strategy == "freeze":
                 # Freeze last frame using tpad filter
                 video_stream = video_stream.filter('tpad', stop_mode='clone', stop_duration=pad_duration)
                 

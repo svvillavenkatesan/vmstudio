@@ -231,10 +231,14 @@ class FrameProcessor:
             "image_path": frame.image_path,
             "index": frame.index + 1,  # 1-based index for workflow
         }
-        if "ipadapter" in workflow_name.lower():
+        reference_workflow = any(
+            marker in workflow_name.lower()
+            for marker in ("ipadapter", "animatediff_i2v")
+        )
+        if reference_workflow:
             if not config.character_reference:
                 raise ValueError(
-                    "IP-Adapter workflow requires a character reference image"
+                    "The selected workflow requires a character reference image"
                 )
             reference_path = Path(config.character_reference).resolve()
             if not reference_path.is_file():
@@ -429,7 +433,12 @@ class FrameProcessor:
                 audio=frame.audio_path,
                 output=output_path,
                 replace_audio=True,  # Replace video audio with narration
-                audio_volume=1.0
+                audio_volume=1.0,
+                pad_strategy=(
+                    "loop"
+                    if "animatediff_i2v" in (config.media_workflow or "").lower()
+                    else "freeze"
+                ),
             )
             
             # Clean up temp file
