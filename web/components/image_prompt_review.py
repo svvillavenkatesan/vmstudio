@@ -7,7 +7,6 @@ import streamlit as st
 
 from pixelle_video.script_validation import has_blocking_issues, validate_visual_prompts
 from pixelle_video.utils.content_generators import generate_image_prompts
-from pixelle_video.utils.template_util import get_template_type
 from web.i18n import tr
 from web.utils.async_helpers import run_async
 from web.components.project_drafts import autosave_draft
@@ -24,10 +23,7 @@ def _visual_review_id(video_params: dict, narrations: list[str]) -> str:
 
 
 def render_image_prompt_review(pixelle_video, video_params: dict, script_ready: bool) -> tuple[dict, bool]:
-    """Return params containing approved image_prompts for image templates."""
-    template = video_params.get("frame_template") or "1080x1920/default.html"
-    if get_template_type(template) != "image":
-        return video_params, True
+    """Return params containing approved visual prompts for image and video templates."""
     if not script_ready:
         return video_params, False
 

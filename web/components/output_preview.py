@@ -60,7 +60,9 @@ def render_single_output(pixelle_video, video_params):
         pixelle_video, video_params, review_ready
     )
     review_ready = review_ready and visual_review_ready
-    video_params, direction_ready = render_scene_direction_editor(video_params, review_ready)
+    video_params, direction_ready = render_scene_direction_editor(
+        pixelle_video, video_params, review_ready
+    )
     review_ready = review_ready and direction_ready
 
     # Extract parameters from video_params dict

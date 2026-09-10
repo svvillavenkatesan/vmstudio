@@ -1013,11 +1013,7 @@ def render_style_config(pixelle_video):
                 preview_button_label = tr("style.video_preview") if template_media_type == "video" else tr("style.preview")
                 if st.button(preview_button_label, key="preview_style", use_container_width=True):
                     if not workflow_key:
-                        st.error(
-                            "请先选择可用的工作流或模型。"
-                            if get_language() == "zh_CN"
-                            else "Please select an available workflow or model first."
-                        )
+                        st.error(tr("scene_preview.workflow_required"))
                         st.stop()
                     previewing_text = tr("style.video_previewing") if template_media_type == "video" else tr("style.previewing")
                     with st.spinner(previewing_text):
@@ -1028,6 +1024,11 @@ def render_style_config(pixelle_video):
                             final_prompt = build_image_prompt(test_prompt, prompt_prefix)
 
                             preview_params = dict(api_video_params) if template_media_type == "video" else {}
+                            if selected_character and any(
+                                marker in workflow_key.lower()
+                                for marker in ("ipadapter", "animatediff_i2v")
+                            ):
+                                preview_params["reference_image"] = selected_character["reference_path"]
 
                             # Generate preview media with the selected source only.
                             media_result = run_async(pixelle_video.media(

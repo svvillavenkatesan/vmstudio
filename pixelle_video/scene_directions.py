@@ -33,6 +33,16 @@ CAMERA_MOVES = {
     "handheld": "subtle controlled handheld camera movement",
 }
 
+ACTIONS = {
+    "natural": "subtle natural breathing and blinking",
+    "blink": "natural eye blinking with tiny head movement",
+    "nod": "gently nodding while maintaining eye contact",
+    "smile": "a gradual natural smile with subtle facial movement",
+    "hand_gesture": "a calm explanatory hand gesture",
+    "speaking": "natural speaking expression with restrained head and hand movement",
+    "walking": "walking slowly with realistic full-body movement",
+}
+
 
 def normalize_scene_direction(value: dict[str, Any] | None) -> dict[str, Any]:
     """Return a safe, stable scene-direction dictionary."""
@@ -40,12 +50,14 @@ def normalize_scene_direction(value: dict[str, Any] | None) -> dict[str, Any]:
     emotion = value.get("emotion", "natural")
     shot = value.get("shot", "medium")
     camera = value.get("camera", "dolly_in")
+    action_preset = value.get("action_preset", "natural")
     try:
         strength = int(value.get("motion_strength", 50))
     except (TypeError, ValueError):
         strength = 50
     return {
         "action": str(value.get("action", "")).strip()[:240],
+        "action_preset": action_preset if action_preset in ACTIONS else "natural",
         "emotion": emotion if emotion in EMOTIONS else "natural",
         "shot": shot if shot in SHOTS else "medium",
         "camera": camera if camera in CAMERA_MOVES else "dolly_in",
@@ -57,6 +69,7 @@ def build_direction_prompt(value: dict[str, Any] | None) -> str:
     """Convert one scene direction into a text-free English visual instruction."""
     direction = normalize_scene_direction(value)
     parts = [SHOTS[direction["shot"]], EMOTIONS[direction["emotion"]]]
+    parts.append(ACTIONS[direction["action_preset"]])
     if direction["action"]:
         parts.append(f"character action: {direction['action']}")
     if direction["camera"] != "static":
